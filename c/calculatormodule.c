@@ -11,14 +11,26 @@ sum(PyObject* self, PyObject* args){
     return PyFloat_FromDouble(summa);
 }
 
+static PyObject*
+sub(PyObject* self, PyObject* args, PyObject* kwargs){
+    double a;
+    double b;
+    double subb;
+    static char* keys[] = {"a", "b", NULL};
+    if(!PyArg_ParseTupleAndKeywords(args, kwargs, "dd", keys, &a, &b)) return NULL;
+    subb = a-b;
+    return PyFloat_FromDouble(subb);
+}
+
 static PyMethodDef calculator_methods [] = {
     {"sum", sum, METH_VARARGS, "Makes a+b and return result"},
-    {NULL, NULL, 0, NULL}
+    {"sub", (PyCFunction)(void(*)(void)) sub, METH_VARARGS | METH_KEYWORDS, "Makes a-b and return result"}
 };
 
 static struct PyModuleDef calculator_module = {
-    .m_base = PyModuleDef_HEAD_INIT,
+    PyModuleDef_HEAD_INIT,
     .m_name = "calculator",
+    .m_doc = "Calculator module documentation",
     .m_size = 0,
     .m_methods = calculator_methods
 };
