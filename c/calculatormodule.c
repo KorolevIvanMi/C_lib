@@ -24,7 +24,8 @@ sub(PyObject* self, PyObject* args, PyObject* kwargs){
 
 static PyMethodDef calculator_methods [] = {
     {"sum", sum, METH_VARARGS, "Makes a+b and return result"},
-    {"sub", (PyCFunction)(void(*)(void)) sub, METH_VARARGS | METH_KEYWORDS, "Makes a-b and return result"}
+    {"sub", (PyCFunction)(void(*)(void)) sub, METH_VARARGS | METH_KEYWORDS, "Makes a-b and return result"},
+    {NULL, NULL, 0, NULL}
 };
 
 static struct PyModuleDef calculator_module = {
