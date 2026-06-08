@@ -22,9 +22,20 @@ sub(PyObject* self, PyObject* args, PyObject* kwargs){
     return PyFloat_FromDouble(subb);
 }
 
+static PyObject*
+mult(PyObject* self, PyObject* args){
+    double a=0;
+    double b=0;
+    double multr=0;
+    if(!PyArg_ParseTuple(args,"dd" , &a, &b)) return NULL;
+    multr = a*b;
+    return PyFloat_FromDouble(multr);
+}
+
 static PyMethodDef calculator_methods [] = {
     {"sum", sum, METH_VARARGS, "Makes a+b and return result"},
     {"sub", (PyCFunction)(void(*)(void)) sub, METH_VARARGS | METH_KEYWORDS, "Makes a-b and return result"},
+    {"mult", mult, METH_VARARGS, "Makes a*b and return result"},
     {NULL, NULL, 0, NULL}
 };
 
