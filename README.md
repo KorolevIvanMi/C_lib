@@ -24,5 +24,6 @@ print(calculator.sub(a=10, b=3))  # 7.0
 print(calculator.mult(4, 5))      # 20.0
 print(calculator.div(10, 2))      # 5.0
 print(calculator.div(10, 0))      # ZeroDivisionError: DO NOT DO DIVISION ON 0!!!
+```
 
 **Статус проекта:** * Реализован *
