@@ -1,6 +1,7 @@
 #define PY_SSIZE_T_CLEAN
 #include <Python.h>
 
+
 static PyObject*
 sum(PyObject* self, PyObject* args){
     double a= 0;
@@ -32,10 +33,21 @@ mult(PyObject* self, PyObject* args){
     return PyFloat_FromDouble(multr);
 }
 
+static PyObject*
+my_div(PyObject* self, PyObject* args){
+    double a=0;
+    double b=0;
+    double divr=0;
+    if(!PyArg_ParseTuple(args,"dd" , &a, &b)) return NULL;
+    divr = a/b;
+    return PyFloat_FromDouble(divr);
+}
+
 static PyMethodDef calculator_methods [] = {
     {"sum", sum, METH_VARARGS, "Makes a+b and return result"},
     {"sub", (PyCFunction)(void(*)(void)) sub, METH_VARARGS | METH_KEYWORDS, "Makes a-b and return result"},
     {"mult", mult, METH_VARARGS, "Makes a*b and return result"},
+    {"div", my_div, METH_VARARGS, "Makes a/b and return result"},
     {NULL, NULL, 0, NULL}
 };
 
