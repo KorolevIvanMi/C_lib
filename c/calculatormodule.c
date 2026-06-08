@@ -1,6 +1,16 @@
 #define PY_SSIZE_T_CLEAN
 #include <Python.h>
 
+// static PyObject* DevisionByZeroException = NULL;
+
+// static int 
+// calculator_exec(PyObject* m){
+//     if (DevisionByZeroException != NULL){
+//         PyErr_SetString(PyExc_ImportError, "connot initialize spam module more than once");
+//         return -1;
+//     }
+//     DevisionByZeroException
+// }
 
 static PyObject*
 sum(PyObject* self, PyObject* args){
@@ -39,6 +49,11 @@ my_div(PyObject* self, PyObject* args){
     double b=0;
     double divr=0;
     if(!PyArg_ParseTuple(args,"dd" , &a, &b)) return NULL;
+    if(b == 0){
+        PyErr_SetString(PyExc_ZeroDivisionError, "DO NOT DO DIVISION ON 0!!!");
+        return NULL;
+    }
+
     divr = a/b;
     return PyFloat_FromDouble(divr);
 }
