@@ -26,4 +26,4 @@ print(calculator.div(10, 2))      # 5.0
 print(calculator.div(10, 0))      # ZeroDivisionError: DO NOT DO DIVISION ON 0!!!
 ```
 
-**Статус проекта:** * Реализован *
+**Статус проекта:** *Реализован*
