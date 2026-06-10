@@ -33,6 +33,27 @@ void append(Node** head, int value){
     }
 }
 
+int get_on_pos(Node* head, int pos){
+    int i = 0;
+    if(head == NULL){
+        return -1;
+    }
+    Node* current  = head;
+    while (i != pos){
+        if (current == NULL){
+            return -1;
+        }
+        else{
+            current = current->next;
+        }
+        i = i+1;
+    }
+    if (current == NULL){
+            return -1;
+    }
+    return current->value;
+
+}
 
 int main(){
     Node* mylist = NULL;
@@ -40,6 +61,8 @@ int main(){
     append(&mylist, 10);
     append(&mylist, 1);
     showArray(mylist);
+
+    printf("%d",  get_on_pos(mylist, 3));
     free(mylist);
-    return 1;
+    return 0;
 }
