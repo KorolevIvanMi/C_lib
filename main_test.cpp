@@ -1,3 +1,4 @@
+// Простой список с CRUD
 #include <stdio.h>
 #include <stdlib.h>
 #include "headers/list.h"
@@ -33,6 +34,7 @@ void append(Node** head, int value){
     }
 }
 
+//взятие элемента по индексу
 int get_on_pos(Node* head, int pos){
     int i = 0;
     if(head == NULL){
@@ -55,6 +57,7 @@ int get_on_pos(Node* head, int pos){
 
 }
 
+//замена на позиции
 void change_on_pos(Node** head, int pos , int value ){
     if(*head == NULL){
         return;
@@ -76,6 +79,26 @@ void change_on_pos(Node** head, int pos , int value ){
     current->value = value;
 }
 
+//удаление с конца
+void pop(Node** head){
+    if(*head == NULL){
+        return;
+    }
+    if ((*head)->next == NULL){
+        free(*head);
+        *head = NULL;
+        return;
+    }
+
+    Node* current = *head;
+    while(current->next->next != NULL){
+        current=current->next;
+    }
+    free(current->next);
+    current->next = NULL;
+}
+
+
 int main(){
     Node* mylist = NULL;
     append(&mylist, 12);
@@ -85,9 +108,18 @@ int main(){
 
     printf("%d",  get_on_pos(mylist, 3));
     printf("\n");
-    
+
     change_on_pos(&mylist, 2, -23 );
     showArray(mylist);
+
+    pop(&mylist);
+    showArray(mylist);
+    pop(&mylist);
+    showArray(mylist);
+    pop(&mylist);
+    showArray(mylist);
+
+
     free(mylist);
     return 0;
 }
