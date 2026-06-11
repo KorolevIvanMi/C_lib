@@ -4,57 +4,58 @@
 #include <stdlib.h>
 #include <stdio.h>
 
-// структура на которой основан класс
+// the structure on which the class is based
 typedef struct MyList MyList;
 
 struct MyList {
     PyObject_HEAD
-    PyObject* value;  // значение
-    MyList* next;  // указатель на следующий элемент
+    PyObject* value;  // value
+    MyList* next;  // pointer on next element
 };
 
 
-// описание полей класса
+// description of class fields
 static PyMemberDef MyList_members[] = {
     {"value", Py_T_OBJECT_EX, offsetof(MyList, value), 0, "value of the list"},
     {NULL, 0, 0, 0, NULL}
 };
 
 
-// функция очистки памяти
+// function which clear memory
 static void 
 Custom_dealloc(PyObject* op);
 
-// функция предынициализации. 
-// Тут происходит базовая инициализациия полей
+// pre-initialization function
+// basic field initialization occurs
 static PyObject*
 Custom_new(PyTypeObject* type, PyObject* args, PyObject* kwds);
 
-// полноценная функция инициализации
-// пока требует обязательной передачи значения при инициализации объекта класса
+// initialization function
+// currently requires mandatory transfer of a value
+// when initializing a class object
 static int
 Custom_init(PyObject* op, PyObject* args, PyObject* kwds);
 
-// метод вывода данных из списка
+// method for outputting data from a list
 static PyObject*
 show(PyObject *op, PyObject *Py_UNUSED(dummy));
 
-// метод добавления в конец списка
+// method of adding to the end of a list
 static PyObject*
 append(PyObject* op, PyObject* args);
 
-// метод взятия элемента по индексу
+// method of taking an element by index
 static PyObject*
 get(PyObject* op, PyObject* args);
 
-// описание добавленных методов
+// description of added methods
 static PyMethodDef MyList_methods[] = {
     {"show", show, METH_NOARGS, "show list"},
     {"append", append,  METH_VARARGS, "add element to the end of list"},
     {NULL}
 };
 
-// описания типа данные для MyList с назначением различных функций
+// data type descriptions for MyList with the purpose of various functions
 static PyTypeObject MyListType = {
 .ob_base = PyVarObject_HEAD_INIT(NULL, 0)
     .tp_name = "list.List",
@@ -69,7 +70,7 @@ static PyTypeObject MyListType = {
     .tp_methods = MyList_methods,
 };
 
-// инициализатор модуля
+// module init
 static int
 mylist_exec(PyObject* m){
     if (PyType_Ready(&MyListType) < 0) {
@@ -83,17 +84,17 @@ mylist_exec(PyObject* m){
     return 0;
 }
 
-// объявление слотов
-// первый запускает инициализацию модуля 
-// второй говорит о том, что модуль не может работать одовременно с несколькими
-// интерпритаторами
+// slot declaration
+// the first one starts module initialization
+// the second one indicates that the module cannot work with multiple
+// interpreters simultaneously
 static PyModuleDef_Slot mylist_slots[] = {
     {Py_mod_exec, mylist_exec},
     {Py_mod_multiple_interpreters, Py_MOD_MULTIPLE_INTERPRETERS_NOT_SUPPORTED},
     {0, NULL}
 };
 
-// описание модуля
+// module description
 static PyModuleDef mylist_module = {
     .m_base = PyModuleDef_HEAD_INIT,
     .m_name = "mylist",
@@ -102,13 +103,13 @@ static PyModuleDef mylist_module = {
     .m_slots = mylist_slots,
 };
 
-// точка входа
+// entry point
 PyMODINIT_FUNC
 PyInit_mylist(void){
     return PyModuleDef_Init(&mylist_module);
 }
 
-// реализация функций
+// implementation of functions
 static void 
 Custom_dealloc(PyObject* op){
     MyList* self = (MyList*) op;
