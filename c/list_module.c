@@ -4,6 +4,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 
+// структура на которой основан класс
 typedef struct MyList MyList;
 
 struct MyList {
@@ -12,62 +13,48 @@ struct MyList {
     MyList* next;  // указатель на следующий элемент
 };
 
-static void 
-Custom_dealloc(PyObject* op){
-    MyList* self = (MyList*) op;
-    while (self != NULL){
-        MyList* temp = self;
-        self = self->next;
-        Py_XDECREF(temp->value);
-        Py_TYPE(temp) -> tp_free(temp);
-    }
-}
 
-static PyObject*
-Custom_new(PyTypeObject* type, PyObject* args, PyObject* kwds){
-    MyList* self;
-    self = (MyList* ) type->tp_alloc(type, 0);
-    self->next = NULL;
-    if(self != NULL){
-        self->value = Py_GetConstant(Py_CONSTANT_ZERO);
-        if(self->value == NULL){
-            Py_DECREF(self);
-            return NULL;
-        }
-    }
-    return (PyObject*) self;
-}   
-
-static int
-Custom_init(PyObject* op, PyObject* args, PyObject* kwds){
-    MyList* self  = (MyList*) op;
-    static char *kwlist[] = {"value", NULL};
-    PyObject* value;
-    if(!PyArg_ParseTupleAndKeywords(args, kwds, "O", kwlist, &value)) return -1;
-    if (value){
-        Py_XSETREF(self->value, Py_NewRef(value));
-    }
-
-    return 0;
-}
-
+// описание полей класса
 static PyMemberDef MyList_members[] = {
     {"value", Py_T_OBJECT_EX, offsetof(MyList, value), 0, "value of the list"},
     {NULL, 0, 0, 0, NULL}
 };
 
+
+// функция очистки памяти
+static void 
+Custom_dealloc(PyObject* op);
+
+// функция предынициализации. 
+// Тут происходит базовая инициализациия полей
+static PyObject*
+Custom_new(PyTypeObject* type, PyObject* args, PyObject* kwds);
+
+// полноценная функция инициализации
+// пока требует обязательной передачи значения при инициализации объекта класса
+static int
+Custom_init(PyObject* op, PyObject* args, PyObject* kwds);
+
+// метод вывода данных из списка
 static PyObject*
 show(PyObject *op, PyObject *Py_UNUSED(dummy));
 
+// метод добавления в конец списка
 static PyObject*
 append(PyObject* op, PyObject* args);
 
+// метод взятия элемента по индексу
+static PyObject*
+get(PyObject* op, PyObject* args);
+
+// описание добавленных методов
 static PyMethodDef MyList_methods[] = {
     {"show", show, METH_NOARGS, "show list"},
     {"append", append,  METH_VARARGS, "add element to the end of list"},
     {NULL}
 };
 
+// описания типа данные для MyList с назначением различных функций
 static PyTypeObject MyListType = {
 .ob_base = PyVarObject_HEAD_INIT(NULL, 0)
     .tp_name = "list.List",
@@ -82,6 +69,7 @@ static PyTypeObject MyListType = {
     .tp_methods = MyList_methods,
 };
 
+// инициализатор модуля
 static int
 mylist_exec(PyObject* m){
     if (PyType_Ready(&MyListType) < 0) {
@@ -95,12 +83,17 @@ mylist_exec(PyObject* m){
     return 0;
 }
 
+// объявление слотов
+// первый запускает инициализацию модуля 
+// второй говорит о том, что модуль не может работать одовременно с несколькими
+// интерпритаторами
 static PyModuleDef_Slot mylist_slots[] = {
     {Py_mod_exec, mylist_exec},
     {Py_mod_multiple_interpreters, Py_MOD_MULTIPLE_INTERPRETERS_NOT_SUPPORTED},
     {0, NULL}
 };
 
+// описание модуля
 static PyModuleDef mylist_module = {
     .m_base = PyModuleDef_HEAD_INIT,
     .m_name = "mylist",
@@ -109,9 +102,52 @@ static PyModuleDef mylist_module = {
     .m_slots = mylist_slots,
 };
 
+// точка входа
 PyMODINIT_FUNC
 PyInit_mylist(void){
     return PyModuleDef_Init(&mylist_module);
+}
+
+// реализация функций
+static void 
+Custom_dealloc(PyObject* op){
+    MyList* self = (MyList*) op;
+    while (self != NULL){
+        MyList* temp = self;
+        self = self->next;
+        Py_XDECREF(temp->value);
+        Py_TYPE(temp) -> tp_free(temp);
+    }
+}
+
+
+static PyObject*
+Custom_new(PyTypeObject* type, PyObject* args, PyObject* kwds){
+    MyList* self;
+    self = (MyList* ) type->tp_alloc(type, 0);
+    self->next = NULL;
+    if(self != NULL){
+        self->value = Py_GetConstant(Py_CONSTANT_ZERO);
+        if(self->value == NULL){
+            Py_DECREF(self);
+            return NULL;
+        }
+    }
+    return (PyObject*) self;
+}  
+
+
+static int
+Custom_init(PyObject* op, PyObject* args, PyObject* kwds){
+    MyList* self  = (MyList*) op;
+    static char *kwlist[] = {"value", NULL};
+    PyObject* value;
+    if(!PyArg_ParseTupleAndKeywords(args, kwds, "O", kwlist, &value)) return -1;
+    if (value){
+        Py_XSETREF(self->value, Py_NewRef(value));
+    }
+
+    return 0;
 }
 
 
@@ -174,3 +210,7 @@ show(PyObject *op, PyObject *Py_UNUSED(dummy)){
     fflush(stdout);
     Py_RETURN_NONE;
 }
+
+
+static PyObject*
+get(PyObject* op, PyObject* args);
