@@ -48,11 +48,16 @@ append(PyObject* op, PyObject* args);
 static PyObject*
 get(PyObject* op, PyObject* args);
 
+// method of deleting last element
+static PyObject*
+pop(PyObject* op, PyObject* Py_UNUSED(dummy));
+
 // description of added methods
 static PyMethodDef MyList_methods[] = {
     {"show", show, METH_NOARGS, "show list"},
     {"append", append,  METH_VARARGS, "add element to the end of list"},
     {"get", get, METH_VARARGS, "return element on position x"},
+    {"pop", pop, METH_NOARGS, "delete last element"},
     {NULL}
 };
 
@@ -159,15 +164,12 @@ append(PyObject* op, PyObject* args){
 
     PyObject* value;
     if(!PyArg_ParseTuple(args, "O", &value)) return NULL;
-
     MyList* new_element = (MyList*)MyListType.tp_alloc(&MyListType, 0);
     new_element->next = NULL;
     if (value){
         Py_XSETREF(new_element->value, Py_NewRef(value));
     }
-
     MyList* current = self;
-
     if(current == NULL){
         current = new_element;
     }
@@ -178,7 +180,6 @@ append(PyObject* op, PyObject* args){
         }
         current->next = new_element;
     }
-
     Py_RETURN_NONE;
 }
 
@@ -207,7 +208,7 @@ show(PyObject *op, PyObject *Py_UNUSED(dummy)){
                 PyErr_Clear();
             }
         }else{
-            printf("NULL");
+            printf("");
         }
         current = current->next;
         
@@ -240,4 +241,26 @@ get(PyObject* op, PyObject* args){
         return NULL;
     }
     return current->value;
+}
+
+static PyObject*
+pop(PyObject* op, PyObject* Py_UNUSED(dummy)){
+    MyList* self = (MyList*) op;
+    if(self == NULL){
+        Py_RETURN_NONE;
+    }
+    if(self->next==NULL){
+        PyObject* value = self->value;
+        self->value = NULL;
+        return value;
+    }
+    MyList* current = self;
+    while(current->next->next != NULL){
+        current = current->next;
+    }
+    PyObject* value = current->next->value;
+    current->next->value = NULL;
+    Py_TYPE(current->next)->tp_free(current->next);
+    current->next = NULL;
+    return value;
 }
