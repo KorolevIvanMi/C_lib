@@ -52,6 +52,10 @@ get(PyObject* op, PyObject* args);
 static PyObject*
 pop(PyObject* op, PyObject* Py_UNUSED(dummy));
 
+// method of update value on index
+static PyObject*
+updateAt(PyObject* op, PyObject* args);
+
 // description of added methods
 static PyMethodDef MyList_methods[] = {
     {"show", show, METH_NOARGS, "show list"},
