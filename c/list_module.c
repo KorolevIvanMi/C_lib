@@ -52,6 +52,7 @@ get(PyObject* op, PyObject* args);
 static PyMethodDef MyList_methods[] = {
     {"show", show, METH_NOARGS, "show list"},
     {"append", append,  METH_VARARGS, "add element to the end of list"},
+    {"get", get, METH_VARARGS, "return element on position x"},
     {NULL}
 };
 
@@ -196,6 +197,9 @@ show(PyObject *op, PyObject *Py_UNUSED(dummy)){
                 const char* str = PyUnicode_AsUTF8(repr);
                 if(str != NULL){
                     printf("%s", str);
+                    if(current->next != NULL){
+                        printf(", ");
+                    }
                 }
                 Py_DECREF(repr);
             }else{
@@ -206,12 +210,34 @@ show(PyObject *op, PyObject *Py_UNUSED(dummy)){
             printf("NULL");
         }
         current = current->next;
-        printf(", ");
+        
     }
+    printf("\n");
     fflush(stdout);
     Py_RETURN_NONE;
 }
 
 
 static PyObject*
-get(PyObject* op, PyObject* args);
+get(PyObject* op, PyObject* args){
+    MyList* self = (MyList*) op;
+    int req_pos = 0;
+    if(!PyArg_ParseTuple(args, "i", &req_pos)) return NULL;
+
+    int i = 0;
+    if(self == NULL) return NULL;
+    MyList* current = self;
+    while( i != req_pos){
+        if(current == NULL){
+            return NULL;
+        }
+        else{
+            current = current->next;
+        }
+        i = i+1;
+    }
+    if(current == NULL){
+        return NULL;
+    }
+    return current->value;
+}
