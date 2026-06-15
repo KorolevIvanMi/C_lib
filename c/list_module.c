@@ -140,7 +140,7 @@ Custom_new(PyTypeObject* type, PyObject* args, PyObject* kwds){
     self->next = NULL;
     if(self != NULL){
         self->value = NULL;
-        self->next = NULL;
+
     }
     return (PyObject*) self;
 }  
@@ -150,7 +150,7 @@ static int
 Custom_init(PyObject* op, PyObject* args, PyObject* kwds){
     MyList* self  = (MyList*) op;
     static char *kwlist[] = {"value", NULL};
-    PyObject* value;
+    PyObject* value = NULL;
     if(!PyArg_ParseTupleAndKeywords(args, kwds, "|O", kwlist, &value)) return -1;
     if (value){
         Py_XSETREF(self->value, Py_NewRef(value));
@@ -245,6 +245,7 @@ get(PyObject* op, PyObject* args){
     if(current == NULL){
         return NULL;
     }
+    Py_INCREF(current->value); 
     return current->value;
 }
 
@@ -267,6 +268,7 @@ pop(PyObject* op, PyObject* Py_UNUSED(dummy)){
     current->next->value = NULL;
     Py_TYPE(current->next)->tp_free(current->next);
     current->next = NULL;
+    
     return value;
 }
 
