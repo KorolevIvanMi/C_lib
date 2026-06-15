@@ -139,11 +139,8 @@ Custom_new(PyTypeObject* type, PyObject* args, PyObject* kwds){
     self = (MyList* ) type->tp_alloc(type, 0);
     self->next = NULL;
     if(self != NULL){
-        self->value = Py_GetConstant(Py_CONSTANT_ZERO);
-        if(self->value == NULL){
-            Py_DECREF(self);
-            return NULL;
-        }
+        self->value = NULL;
+        self->next = NULL;
     }
     return (PyObject*) self;
 }  
@@ -154,9 +151,12 @@ Custom_init(PyObject* op, PyObject* args, PyObject* kwds){
     MyList* self  = (MyList*) op;
     static char *kwlist[] = {"value", NULL};
     PyObject* value;
-    if(!PyArg_ParseTupleAndKeywords(args, kwds, "O", kwlist, &value)) return -1;
+    if(!PyArg_ParseTupleAndKeywords(args, kwds, "|O", kwlist, &value)) return -1;
     if (value){
         Py_XSETREF(self->value, Py_NewRef(value));
+    }
+    else{
+        self->value = NULL;
     }
 
     return 0;
