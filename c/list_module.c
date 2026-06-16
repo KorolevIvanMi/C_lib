@@ -167,8 +167,10 @@ static PyObject*
 append(PyObject* op, PyObject* args){
     MyList* self = (MyList*) op;
     PyObject* value;
-    if(!PyArg_ParseTuple(args, "O", &value)) return NULL;
-
+    if(!PyArg_ParseTuple(args, "O", &value)){
+    PyErr_SetString(PyExc_TypeError, "This arguments are not suppose to bu used with this function! Or maybe you didn't send any arguments");
+    return NULL;
+    }
     
     if (self->value == NULL && self->next == NULL) {
         Py_XSETREF(self->value, Py_NewRef(value));
@@ -192,6 +194,7 @@ append(PyObject* op, PyObject* args){
 static PyObject*
 show(PyObject *op, PyObject *Py_UNUSED(dummy)){
     if(op == NULL){
+        PyErr_SetString(PyExc_ValueError, "List is NULL");
         return NULL;
     }
     MyList* self = (MyList* ) op;
@@ -228,13 +231,23 @@ static PyObject*
 get(PyObject* op, PyObject* args){
     MyList* self = (MyList*) op;
     int req_pos = 0;
-    if(!PyArg_ParseTuple(args, "i", &req_pos)) return NULL;
-
+    if(!PyArg_ParseTuple(args, "i", &req_pos)){
+        PyErr_SetString(PyExc_TypeError, "This arguments are not suppose to bu used with this function! Or maybe you didn't send any arguments");
+        return NULL;
+    }
+    if (req_pos < 0){
+        PyErr_SetString(PyExc_IndexError, "index is out of range");
+        return NULL;
+    }
     int i = 0;
-    if(self == NULL) return NULL;
+    if(self == NULL) {
+        PyErr_SetString(PyExc_ValueError, "List is NULL");
+        return NULL;
+    }
     MyList* current = self;
     while( i != req_pos){
         if(current == NULL){
+            PyErr_SetString(PyExc_IndexError, "index is out of range");
             return NULL;
         }
         else{
@@ -243,6 +256,7 @@ get(PyObject* op, PyObject* args){
         i = i+1;
     }
     if(current == NULL){
+        PyErr_SetString(PyExc_IndexError, "index is out of range");
         return NULL;
     }
     Py_INCREF(current->value); 
@@ -276,14 +290,19 @@ static PyObject*
 updateAt(PyObject* op, PyObject* args){
 
     if (op == NULL){
+        PyErr_SetString(PyExc_ValueError, "List is NULL");
         return NULL;
     }
     
     MyList* self = (MyList*) op;
     PyObject* value;
     int pos = 0;
-    if(!PyArg_ParseTuple(args, "Oi", &value, &pos)) return NULL;
+    if(!PyArg_ParseTuple(args, "Oi", &value, &pos)) {
+        PyErr_SetString(PyExc_TypeError, "This arguments are not suppose to bu used with this function! Or maybe you didn't send any arguments");
+        return NULL;
+    }
     if(pos < 0){
+        PyErr_SetString(PyExc_IndexError, "index is out of range");
         return NULL;
     }
 
@@ -291,6 +310,7 @@ updateAt(PyObject* op, PyObject* args){
     MyList* current = self;
     while( i != pos){
         if(current == NULL){
+            PyErr_SetString(PyExc_IndexError, "index is out of range");
             return NULL;
         }
         else{
@@ -299,6 +319,7 @@ updateAt(PyObject* op, PyObject* args){
         i = i+1;
     }
     if (current == NULL){
+        PyErr_SetString(PyExc_IndexError, "index is out of range");
         return NULL;
     }
     Py_XSETREF(current->value, Py_NewRef(value));
