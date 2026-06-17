@@ -1,7 +1,8 @@
+// this module contains system commands - init, new, deakkoc and etc.
 #ifndef CORE_MODULE_H
 #define CORE_MODULE_H
 
-#include <Python.h>
+
 
 // function which clear memory
 void 

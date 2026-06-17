@@ -1,3 +1,4 @@
+#include <Python.h>
 
 #include <core_module.h>
 #include <list.h>
