@@ -6,4 +6,8 @@
 PyObject*
 updateAt(PyObject* op, PyObject* args);
 
+// method of adding to the end of a list
+PyObject*
+append(PyObject* op, PyObject* args);
+
 #endif

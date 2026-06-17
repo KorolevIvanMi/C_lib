@@ -43,3 +43,31 @@ updateAt(PyObject* op, PyObject* args){
     Py_RETURN_NONE;
 
 }
+
+
+PyObject*
+append(PyObject* op, PyObject* args){
+    MyList* self = (MyList*) op;
+    PyObject* value;
+    if(!PyArg_ParseTuple(args, "O", &value)){
+    PyErr_SetString(PyExc_TypeError, "This arguments are not suppose to bu used with this function! Or maybe you didn't send any arguments");
+    return NULL;
+    }
+    
+    if (self->value == NULL && self->next == NULL) {
+        Py_XSETREF(self->value, Py_NewRef(value));
+        Py_RETURN_NONE;
+    }
+
+    MyList* new_element = (MyList*)MyListType.tp_alloc(&MyListType, 0);
+    new_element->next = NULL;
+    if (value){
+        Py_XSETREF(new_element->value, Py_NewRef(value));
+    }
+    MyList* current = self;
+    while(current->next != NULL){
+        current = current->next;
+    }
+    current->next = new_element;
+    Py_RETURN_NONE;
+}
