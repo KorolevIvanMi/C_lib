@@ -8,13 +8,13 @@
 #include <list.h>
 #include <core_module.h>
 #include <read_module.h>
+#include <update_module.h>
 
 // description of class fields
 static PyMemberDef MyList_members[] = {
     {"value", Py_T_OBJECT_EX, offsetof(MyList, value), 0, "value of the list"},
     {NULL, 0, 0, 0, NULL}
 };
-
 
 
 // method of adding to the end of a list
@@ -27,9 +27,7 @@ append(PyObject* op, PyObject* args);
 static PyObject*
 pop(PyObject* op, PyObject* Py_UNUSED(dummy));
 
-// method of update value on index
-static PyObject*
-updateAt(PyObject* op, PyObject* args);
+
 
 // description of added methods
 static PyMethodDef MyList_methods[] = {
@@ -125,11 +123,6 @@ append(PyObject* op, PyObject* args){
 }
 
 
-
-
-
-
-
 static PyObject*
 pop(PyObject* op, PyObject* Py_UNUSED(dummy)){
     MyList* self = (MyList*) op;
@@ -153,43 +146,3 @@ pop(PyObject* op, PyObject* Py_UNUSED(dummy)){
     return value;
 }
 
-static PyObject*
-updateAt(PyObject* op, PyObject* args){
-
-    if (op == NULL){
-        PyErr_SetString(PyExc_ValueError, "List is NULL");
-        return NULL;
-    }
-    
-    MyList* self = (MyList*) op;
-    PyObject* value;
-    int pos = 0;
-    if(!PyArg_ParseTuple(args, "Oi", &value, &pos)) {
-        PyErr_SetString(PyExc_TypeError, "This arguments are not suppose to bu used with this function! Or maybe you didn't send any arguments");
-        return NULL;
-    }
-    if(pos < 0){
-        PyErr_SetString(PyExc_IndexError, "index is out of range");
-        return NULL;
-    }
-
-    int i = 0;
-    MyList* current = self;
-    while( i != pos){
-        if(current == NULL){
-            PyErr_SetString(PyExc_IndexError, "index is out of range");
-            return NULL;
-        }
-        else{
-            current = current->next;
-        }
-        i = i+1;
-    }
-    if (current == NULL){
-        PyErr_SetString(PyExc_IndexError, "index is out of range");
-        return NULL;
-    }
-    Py_XSETREF(current->value, Py_NewRef(value));
-    Py_RETURN_NONE;
-
-}

@@ -3,7 +3,6 @@
 #define READ_MODULE_H
 
 
-
 // method for outputting data from a list
 PyObject*
 show(PyObject *op, PyObject *Py_UNUSED(dummy));
