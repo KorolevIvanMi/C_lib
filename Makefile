@@ -5,7 +5,7 @@ INC = -I./headers
 TARGET = build/mylist.so
 
 # Перечисляем все .c файлы
-SOURCES = c/list_module.c 
+SOURCES = c/list_module.c  c/core_module.c
 
 all: $(TARGET)
 

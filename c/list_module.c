@@ -5,29 +5,13 @@
 #include <stdio.h>
 
 #include <list.h>
-
+#include <core_module.h>
 
 // description of class fields
 static PyMemberDef MyList_members[] = {
     {"value", Py_T_OBJECT_EX, offsetof(MyList, value), 0, "value of the list"},
     {NULL, 0, 0, 0, NULL}
 };
-
-
-// function which clear memory
-static void 
-Custom_dealloc(PyObject* op);
-
-// pre-initialization function
-// basic field initialization occurs
-static PyObject*
-Custom_new(PyTypeObject* type, PyObject* args, PyObject* kwds);
-
-// initialization function
-// currently requires mandatory transfer of a value
-// when initializing a class object
-static int
-Custom_init(PyObject* op, PyObject* args, PyObject* kwds);
 
 // method for outputting data from a list
 static PyObject*
@@ -113,47 +97,6 @@ PyInit_mylist(void){
     return PyModuleDef_Init(&mylist_module);
 }
 
-// implementation of functions
-static void 
-Custom_dealloc(PyObject* op){
-    MyList* self = (MyList*) op;
-    while (self != NULL){
-        MyList* temp = self;
-        self = self->next;
-        Py_XDECREF(temp->value);
-        Py_TYPE(temp) -> tp_free(temp);
-    }
-}
-
-
-static PyObject*
-Custom_new(PyTypeObject* type, PyObject* args, PyObject* kwds){
-    MyList* self;
-    self = (MyList* ) type->tp_alloc(type, 0);
-    self->next = NULL;
-    if(self != NULL){
-        self->value = NULL;
-
-    }
-    return (PyObject*) self;
-}  
-
-
-static int
-Custom_init(PyObject* op, PyObject* args, PyObject* kwds){
-    MyList* self  = (MyList*) op;
-    static char *kwlist[] = {"value", NULL};
-    PyObject* value = NULL;
-    if(!PyArg_ParseTupleAndKeywords(args, kwds, "|O", kwlist, &value)) return -1;
-    if (value){
-        Py_XSETREF(self->value, Py_NewRef(value));
-    }
-    else{
-        self->value = NULL;
-    }
-
-    return 0;
-}
 
 
 static PyObject*
