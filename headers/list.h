@@ -6,3 +6,5 @@ struct MyList {
     PyObject* value;  // value
     MyList* next;  // pointer on next element
 };
+
+extern PyTypeObject MyListType;

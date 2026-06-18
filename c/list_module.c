@@ -29,7 +29,7 @@ static PyMethodDef MyList_methods[] = {
 };
 
 // data type descriptions for MyList with the purpose of various functions
-static PyTypeObject MyListType = {
+PyTypeObject MyListType = {
 .ob_base = PyVarObject_HEAD_INIT(NULL, 0)
     .tp_name = "list.List",
     .tp_doc = PyDoc_STR("My list"),

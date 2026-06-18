@@ -61,8 +61,9 @@ append(PyObject* op, PyObject* args){
 
     MyList* new_element = (MyList*)MyListType.tp_alloc(&MyListType, 0);
     new_element->next = NULL;
+    new_element->value = NULL;
     if (value){
-        Py_XSETREF(new_element->value, Py_NewRef(value));
+        new_element->value = Py_NewRef(value);
     }
     MyList* current = self;
     while(current->next != NULL){

@@ -3,7 +3,6 @@
 #include <core_module.h>
 #include <list.h>
 
-
 void 
 Custom_dealloc(PyObject* op){
     MyList* self = (MyList*) op;
@@ -35,44 +34,48 @@ Custom_init(PyObject* op, PyObject* args, PyObject* kwds){
     static char *kwlist[] = {"value", NULL};
     PyObject* value = NULL;
     if(!PyArg_ParseTupleAndKeywords(args, kwds, "|O", kwlist, &value)) return -1;
+    if(value){
+        if(PyList_Check(value)){
+            int len = PyList_GET_SIZE(value);
+            if (len == 0){
+                self->value = NULL;
+                self->next = NULL;
+                return 0;
+            }
+            MyList* current = self;
 
-    if(PyList_Check(value)){
-        int len = PyList_GET_SIZE(value);
-        if (len == 0){
-            self->value = NULL;
-            self->next = NULL;
-            return 0;
+            for(int i = 0; i < len; i++){
+                if(i == 0){
+                    current->value = PyList_GetItem(value, i);
+                    Py_INCREF(current->value);
+                    current->next = NULL;
+                }
+                else{
+                    MyList* new_element = (MyList*)MyListType.tp_alloc(&MyListType, 0);
+                    new_element->value = Py_NewRef(PyList_GetItem(value, i));
+                    new_element->next = NULL;
+
+                    current->next = new_element;
+                    current = new_element;
+                }
+            }
         }
-        MyList* current = self;
-
-        for(int i = 0; i < len; i++){
-            if(i == 0){
-                current->value = PyList_GetItem(value, i);
-                Py_INCREF(curren->value);
-                current->next = NULL;
+        else{
+            if (value){
+            Py_XSETREF(self->value, Py_NewRef(value));
+            self->next = NULL;
             }
             else{
-                MyList* new_element = (MyList*)MyListType.tp_alloc(&MyListType, 0);
-                new_element->value = PyList_GetItem(value, i);
-                Py_INCREF(new_element->value);
-                new_element->next = NULL;
-                
-                current->next = new_element;
-                current = new_element;
+                self->value = NULL;
+                self->next = NULL;
             }
         }
     }
     else{
-        if (value){
-        Py_XSETREF(self->value, Py_NewRef(value));
+        self->value = NULL;
         self->next = NULL;
-        }
-        else{
-            self->value = NULL;
-            self->next = NULL;
-        }
     }
-    
+
 
     return 0;
 }
