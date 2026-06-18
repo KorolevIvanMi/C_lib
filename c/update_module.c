@@ -11,8 +11,7 @@ static MyList* from_PyList_to_MyList(PyObject* value){
 
     int length = PyList_GET_SIZE(value);
     if (length == 0){
-        head->value = NULL;
-        head->next = NULL;
+        return head;
     }
     else{
         MyList* current = head;
@@ -83,28 +82,46 @@ append(PyObject* op, PyObject* args){
     }
     if(PyList_Check(value)){
         MyList* new_part = from_PyList_to_MyList(value);
+
         if (self->value == NULL && self->next == NULL) {
             self->value = new_part->value;
+            Py_XINCREF(self->value);
             self->next = new_part->next;
+            Py_TYPE(new_part)->tp_free((PyObject*)new_part); 
             Py_RETURN_NONE;
         }
         MyList* current = self;
         while(current->next != NULL){
             current = current->next;
         }
-        if(new_part->value != NULL){
+        if(new_part->value == NULL){
+            Py_TYPE(new_part)->tp_free((PyObject*)new_part);
+        }
+        else{
             current->next = new_part;
         }
-        
-
     }
     else if (PyObject_TypeCheck(value, &MyListType)) {
         MyList* value_to_mylist = (MyList*) value;
         MyList* current = self;
-        while(current->next != NULL){
+        while(current->next != NULL) {
             current = current->next;
         }
-        current->next = value_to_mylist;
+        MyList* src = value_to_mylist;
+        while(src != NULL) {
+            if(current->value == NULL && current == self) {
+                current->value = src->value;
+                Py_XINCREF(current->value);
+            } else {
+                MyList* new_node = (MyList*)MyListType.tp_alloc(&MyListType, 0);
+                new_node->value = src->value;
+                Py_XINCREF(new_node->value);
+                new_node->next = NULL;
+                current->next = new_node;
+                current = new_node;
+            }
+            src = src->next;
+        }
     }
     else{
         if (self->value == NULL && self->next == NULL) {
