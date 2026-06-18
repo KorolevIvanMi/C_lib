@@ -43,7 +43,6 @@ Custom_init(PyObject* op, PyObject* args, PyObject* kwds){
                 return 0;
             }
             MyList* current = self;
-
             for(int i = 0; i < len; i++){
                 if(i == 0){
                     current->value = PyList_GetItem(value, i);
