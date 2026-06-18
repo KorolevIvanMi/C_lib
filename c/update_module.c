@@ -245,8 +245,8 @@ insert(PyObject* op, PyObject* args){
     MyList* self = (MyList*)op;
     int req_pos = 0;
     PyObject* value = NULL;
-    
-    if(!PyArg_ParseTuple(args, "O|i", &value, &req_pos)){  
+    int unpack = 0;
+    if(!PyArg_ParseTuple(args, "O|ii", &value, &req_pos, &unpack)){  
         PyErr_SetString(PyExc_TypeError, "This arguments are not suppose to bu used with this function! Or maybe you didn't send any arguments");
         return NULL;
     }
@@ -254,47 +254,215 @@ insert(PyObject* op, PyObject* args){
         PyErr_SetString(PyExc_IndexError, "index is out of range");
         return NULL;
     }
-    if(!PyObject_TypeCheck(value, &MyListType)){
-        if(PyErr_WarnEx(PyExc_UserWarning, 
-            "insert() is designed for MyList objects. Use append() or prepend() for single values.", 1) < 0){
-            return NULL;
+    if(PyObject_TypeCheck(value, &MyListType)){
+        if(unpack == 0){
+            if(req_pos == 0){
+                MyList* old_node = (MyList*)MyListType.tp_alloc(&MyListType, 0);
+                old_node->value = self->value;
+                old_node->next = self->next;
+                
+                self->value = value;
+                Py_XINCREF(self->value);
+                self->next = old_node;
+                
+                Py_RETURN_NONE;
+            }
+            int i = 0;
+            MyList* current = self;
+            while(i != req_pos - 1){  
+                if(current == NULL){
+                    PyErr_SetString(PyExc_IndexError, "index is out of range");
+                    return NULL;
+                }
+                current = current->next;
+                i++;
+            }
+            if(current == NULL){
+                PyErr_SetString(PyExc_IndexError, "index is out of range");
+                return NULL;
+            }
+
+            
+            MyList* new_node = (MyList*)MyListType.tp_alloc(&MyListType, 0);
+            new_node->value = value;
+            Py_XINCREF(new_node->value);  
+            new_node->next = current->next;
+            current->next = new_node;
+        }
+        else{
+            MyList* value_as_my_list = (MyList*) value;
+        
+            // Вставка в начало
+            if(req_pos == 0){
+                // Находим конец value_as_my_list
+                MyList* last = value_as_my_list;
+                while(last->next != NULL){
+                    last = last->next;
+                }
+                
+                // Сохраняем старые данные
+                MyList* old_node = (MyList*)MyListType.tp_alloc(&MyListType, 0);
+                old_node->value = self->value;
+                old_node->next = self->next;
+                
+                // Копируем первый элемент
+                self->value = value_as_my_list->value;
+                Py_XINCREF(self->value);
+                self->next = NULL;
+                
+                // Копируем остальные элементы
+                MyList* src = value_as_my_list->next;
+                MyList* current = self;
+                while(src != NULL){
+                    MyList* new_node = (MyList*)MyListType.tp_alloc(&MyListType, 0);
+                    new_node->value = src->value;
+                    Py_XINCREF(new_node->value);
+                    new_node->next = NULL;
+                    current->next = new_node;
+                    current = new_node;
+                    src = src->next;
+                }
+                
+                // Присоединяем старые данные
+                current->next = old_node;
+                
+                Py_RETURN_NONE;
+            }
+            
+            // Вставка в середину/конец
+            int i = 0;
+            MyList* current = self;
+            while(i != req_pos - 1){
+                if(current == NULL){
+                    PyErr_SetString(PyExc_IndexError, "index is out of range");
+                    return NULL;
+                }
+                current = current->next;
+                i++;
+            }
+            if(current == NULL){
+                PyErr_SetString(PyExc_IndexError, "index is out of range");
+                return NULL;
+            }
+            
+            // Сохраняем хвост
+            MyList* tail = current->next;
+            
+            // Вставляем первый элемент
+            MyList* new_node = (MyList*)MyListType.tp_alloc(&MyListType, 0);
+            new_node->value = value_as_my_list->value;
+            Py_XINCREF(new_node->value);
+            new_node->next = NULL;
+            current->next = new_node;
+            current = new_node;
+            
+            // Вставляем остальные элементы
+            MyList* src = value_as_my_list->next;
+            while(src != NULL){
+                MyList* new_node = (MyList*)MyListType.tp_alloc(&MyListType, 0);
+                new_node->value = src->value;
+                Py_XINCREF(new_node->value);
+                new_node->next = NULL;
+                current->next = new_node;
+                current = new_node;
+                src = src->next;
+            }
+            
+            // Присоединяем хвост
+            current->next = tail;
         }
     }
-    
-    if(req_pos == 0){
-        MyList* old_node = (MyList*)MyListType.tp_alloc(&MyListType, 0);
-        old_node->value = self->value;
-        old_node->next = self->next;
+    else if(PyList_Check(value)){
+        int len = PyList_GET_SIZE(value);
+        if (len == 0){
+            Py_RETURN_NONE;  
+        }
         
-        self->value = value;
-        Py_XINCREF(self->value);
-        self->next = old_node;
+        MyList* new_part = from_PyList_to_MyList(value);
         
-        Py_RETURN_NONE;
-    }
-
-    
-    int i = 0;
-    MyList* current = self;
-    while(i != req_pos - 1){  
+        // Вставка в начало
+        if(req_pos == 0){
+            MyList* last = new_part;
+            while(last->next != NULL){
+                last = last->next;
+            }
+            last->next = self->next;
+            
+            PyObject* old_value = self->value;
+            self->value = new_part->value;
+            Py_XINCREF(self->value);
+            self->next = new_part->next;
+            Py_XDECREF(old_value);
+            
+            new_part->value = NULL;
+            new_part->next = NULL;
+            Py_TYPE(new_part)->tp_free((PyObject*)new_part);
+            
+            Py_RETURN_NONE;
+        }
+        
+        // Вставка в середину/конец
+        int i = 0;
+        MyList* current = self;
+        while(i != req_pos - 1){
+            if(current == NULL){
+                PyErr_SetString(PyExc_IndexError, "index is out of range");
+                return NULL;
+            }
+            current = current->next;
+            i++;
+        }
         if(current == NULL){
             PyErr_SetString(PyExc_IndexError, "index is out of range");
             return NULL;
         }
-        current = current->next;
-        i++;
+        
+        // Находим конец new_part
+        MyList* last = new_part;
+        while(last->next != NULL){
+            last = last->next;
+        }
+        
+        // Вставляем: current -> new_part -> старый current->next
+        last->next = current->next;
+        current->next = new_part;
     }
-    if(current == NULL){
-        PyErr_SetString(PyExc_IndexError, "index is out of range");
-        return NULL;
-    }
-
     
-    MyList* new_node = (MyList*)MyListType.tp_alloc(&MyListType, 0);
-    new_node->value = value;
-    Py_XINCREF(new_node->value);  
-    new_node->next = current->next;
-    current->next = new_node;
-
-    Py_RETURN_NONE;
+    else{
+        if(req_pos == 0){
+            // Вставка в начало
+            MyList* old_node = (MyList*)MyListType.tp_alloc(&MyListType, 0);
+            old_node->value = self->value;
+            old_node->next = self->next;
+            
+            self->value = value;
+            Py_XINCREF(self->value);
+            self->next = old_node;
+            
+            Py_RETURN_NONE;
+        }
+        
+        // Вставка в середину/конец
+        int i = 0;
+        MyList* current = self;
+        while(i != req_pos - 1){
+            if(current == NULL){
+                PyErr_SetString(PyExc_IndexError, "index is out of range");
+                return NULL;
+            }
+            current = current->next;
+            i++;
+        }
+        if(current == NULL){
+            PyErr_SetString(PyExc_IndexError, "index is out of range");
+            return NULL;
+        }
+        
+        MyList* new_node = (MyList*)MyListType.tp_alloc(&MyListType, 0);
+        new_node->value = value;
+        Py_XINCREF(new_node->value);
+        new_node->next = current->next;
+        current->next = new_node;
+        }
+        Py_RETURN_NONE;
 }
