@@ -48,7 +48,7 @@ updateAt(PyObject* op, PyObject* args){
 PyObject*
 append(PyObject* op, PyObject* args){
     MyList* self = (MyList*) op;
-    PyObject* value;
+    PyObject* value = NULL;
     if(!PyArg_ParseTuple(args, "O", &value)){
     PyErr_SetString(PyExc_TypeError, "This arguments are not suppose to bu used with this function! Or maybe you didn't send any arguments");
     return NULL;
