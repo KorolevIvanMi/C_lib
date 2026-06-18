@@ -1,0 +1,81 @@
+==48046== Memcheck, a memory error detector
+==48046== Copyright (C) 2002-2024, and GNU GPL'd, by Julian Seward et al.
+==48046== Using Valgrind-3.25.1 and LibVEX; rerun with -h for copyright info
+==48046== Command: python3 build/for_test.py
+==48046== Parent PID: 47280
+==48046== 
+==48046== 
+==48046== HEAP SUMMARY:
+==48046==     in use at exit: 2,636 bytes in 19 blocks
+==48046==   total heap usage: 30,634 allocs, 30,615 frees, 5,531,199 bytes allocated
+==48046== 
+==48046== 56 bytes in 1 blocks are possibly lost in loss record 3 of 19
+==48046==    at 0x48538D8: malloc (in /usr/lib/valgrind/vgpreload_memcheck-amd64-linux.so)
+==48046==    by 0x4A2CC19: UnknownInlinedFun (obmalloc.c:1497)
+==48046==    by 0x4A2CC19: UnknownInlinedFun (pycore_object_alloc.h:46)
+==48046==    by 0x4A2CC19: UnknownInlinedFun (gc.c:1894)
+==48046==    by 0x4A2CC19: _PyObject_GC_NewVar (gc.c:1936)
+==48046==    by 0x4A2C7B7: UnknownInlinedFun (tupleobject.c:57)
+==48046==    by 0x4A2C7B7: _PyTuple_FromArray (tupleobject.c:393)
+==48046==    by 0x4A4AF47: _PyObject_MakeTpCall (call.c:216)
+==48046==    by 0x4AAF296: UnknownInlinedFun (pycore_call.h:175)
+==48046==    by 0x4AAF296: UnknownInlinedFun (pycore_call.h:162)
+==48046==    by 0x4AAF296: UnknownInlinedFun (call.c:327)
+==48046==    by 0x4AAF296: _TAIL_CALL_CALL_KW_NON_PY.lto_priv.0 (generated_cases.c.h:3229)
+==48046==    by 0x4900316: UnknownInlinedFun (generated_cases.c.h:12524)
+==48046==    by 0x4900316: _PyEval_EvalFrameDefault.constprop.0.cold (ceval.c:1250)
+==48046==    by 0x4AA47F6: UnknownInlinedFun (pycore_ceval.h:120)
+==48046==    by 0x4AA47F6: UnknownInlinedFun (ceval.c:2110)
+==48046==    by 0x4AA47F6: UnknownInlinedFun (call.c:413)
+==48046==    by 0x4AA47F6: UnknownInlinedFun (call.c:135)
+==48046==    by 0x4AA47F6: UnknownInlinedFun (call.c:504)
+==48046==    by 0x4AA47F6: UnknownInlinedFun (typeobject.c:3000)
+==48046==    by 0x4AA47F6: slot_tp_init.lto_priv.0 (typeobject.c:10555)
+==48046==    by 0x4A4AB59: UnknownInlinedFun (typeobject.c:2384)
+==48046==    by 0x4A4AB59: _PyObject_MakeTpCall.constprop.3 (call.c:242)
+==48046==    by 0x4A73D31: UnknownInlinedFun (pycore_call.h:175)
+==48046==    by 0x4A73D31: UnknownInlinedFun (pycore_call.h:162)
+==48046==    by 0x4A73D31: UnknownInlinedFun (call.c:327)
+==48046==    by 0x4A73D31: _TAIL_CALL_CALL.lto_priv.0 (generated_cases.c.h:1621)
+==48046==    by 0x4900316: UnknownInlinedFun (generated_cases.c.h:12524)
+==48046==    by 0x4900316: _PyEval_EvalFrameDefault.constprop.0.cold (ceval.c:1250)
+==48046==    by 0x4A8CBA8: UnknownInlinedFun (pycore_ceval.h:120)
+==48046==    by 0x4A8CBA8: UnknownInlinedFun (ceval.c:2110)
+==48046==    by 0x4A8CBA8: _PyFunction_Vectorcall (call.c:413)
+==48046==    by 0x4A8074F: UnknownInlinedFun (pycore_call.h:177)
+==48046==    by 0x4A8074F: object_vacall.lto_priv.0 (call.c:820)
+==48046== 
+==48046== 64 bytes in 1 blocks are possibly lost in loss record 8 of 19
+==48046==    at 0x48538D8: malloc (in /usr/lib/valgrind/vgpreload_memcheck-amd64-linux.so)
+==48046==    by 0x4B6B004: UnknownInlinedFun (pycore_object_alloc.h:46)
+==48046==    by 0x4B6B004: gc_alloc.isra.0 (gc.c:1894)
+==48046==    by 0x4A37F90: UnknownInlinedFun (gc.c:1936)
+==48046==    by 0x4A37F90: UnknownInlinedFun (tupleobject.c:57)
+==48046==    by 0x4A37F90: PyTuple_Pack.constprop.0 (tupleobject.c:185)
+==48046==    by 0x4AD5A94: UnknownInlinedFun (compile.c:327)
+==48046==    by 0x4AD5A94: _PyCompile_ConstCacheMergeOne (compile.c:1338)
+==48046==    by 0x4AD321B: UnknownInlinedFun (assemble.c:453)
+==48046==    by 0x4AD321B: _PyAssemble_MakeCodeObject (assemble.c:795)
+==48046==    by 0x4AC1914: optimize_and_assemble_code_unit (compile.c:1446)
+==48046==    by 0x4B8B2CB: UnknownInlinedFun (compile.c:859)
+==48046==    by 0x4B8B2CB: _PyAST_Compile (compile.c:1487)
+==48046==    by 0x4BC49EF: run_mod.lto_priv.0 (pythonrun.c:1412)
+==48046==    by 0x4BC5EA5: pyrun_file.lto_priv.0 (pythonrun.c:1294)
+==48046==    by 0x4BC5620: _PyRun_SimpleFileObject (pythonrun.c:521)
+==48046==    by 0x4BC541F: _PyRun_AnyFileObject (pythonrun.c:81)
+==48046==    by 0x4B66EFF: UnknownInlinedFun (main.c:410)
+==48046==    by 0x4B66EFF: UnknownInlinedFun (main.c:429)
+==48046==    by 0x4B66EFF: UnknownInlinedFun (main.c:695)
+==48046==    by 0x4B66EFF: Py_RunMain (main.c:776)
+==48046== 
+==48046== LEAK SUMMARY:
+==48046==    definitely lost: 0 bytes in 0 blocks
+==48046==    indirectly lost: 0 bytes in 0 blocks
+==48046==      possibly lost: 120 bytes in 2 blocks
+==48046==    still reachable: 2,516 bytes in 17 blocks
+==48046==         suppressed: 0 bytes in 0 blocks
+==48046== Reachable blocks (those to which a pointer was found) are not shown.
+==48046== To see them, rerun with: --leak-check=full --show-leak-kinds=all
+==48046== 
+==48046== For lists of detected and suppressed errors, rerun with: -s
+==48046== ERROR SUMMARY: 2 errors from 2 contexts (suppressed: 0 from 0)

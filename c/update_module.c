@@ -80,6 +80,7 @@ append(PyObject* op, PyObject* args){
         PyErr_SetString(PyExc_TypeError, "This arguments are not suppose to bu used with this function! Or maybe you didn't send any arguments");
         return NULL;
     }
+    // if argument - python list
     if(PyList_Check(value)){
         MyList* new_part = from_PyList_to_MyList(value);
 
@@ -101,6 +102,7 @@ append(PyObject* op, PyObject* args){
             current->next = new_part;
         }
     }
+    // if argument MyList
     else if (PyObject_TypeCheck(value, &MyListType)) {
         MyList* value_to_mylist = (MyList*) value;
         MyList* current = self;
@@ -123,6 +125,7 @@ append(PyObject* op, PyObject* args){
             src = src->next;
         }
     }
+    // if argument - single item
     else{
         if (self->value == NULL && self->next == NULL) {
             self->value = Py_NewRef(value);
@@ -140,6 +143,99 @@ append(PyObject* op, PyObject* args){
             current = current->next;
         }
         current->next = new_element;
+    }
+    Py_RETURN_NONE;
+}
+
+PyObject*
+prepend(PyObject* op, PyObject* args){
+    MyList* self = (MyList*)op;
+    PyObject* value = NULL;
+    if(!PyArg_ParseTuple(args, "O", &value)){
+        PyErr_SetString(PyExc_TypeError, "This arguments are not suppose to bu used with this function! Or maybe you didn't send any arguments");
+        return NULL;
+    }
+
+    if(PyList_Check(value)){
+        MyList* new_part = from_PyList_to_MyList(value);
+
+        if(self->value == NULL && self->next == NULL){
+            self->value = new_part->value;
+            Py_XINCREF(self->value);
+            self->next = new_part->next;
+            Py_TYPE(new_part)->tp_free((PyObject*)new_part); 
+        }
+        else{
+            if(new_part->value==NULL){
+                Py_TYPE(new_part)->tp_free((PyObject*)new_part);
+            }
+            else{
+                MyList* old_node = (MyList*)MyListType.tp_alloc(&MyListType, 0);
+                old_node->value = self->value;      
+                old_node->next = self->next;
+
+                MyList* current_new_part = new_part;
+                while(current_new_part->next != NULL){
+                    current_new_part = current_new_part->next;
+                }
+                current_new_part->next = old_node;
+
+                self->value = new_part->value;
+                Py_XINCREF(self->value);
+                self->next = new_part->next;
+
+                new_part->value = NULL;
+                new_part->next = NULL;
+                Py_TYPE(new_part)->tp_free((PyObject*)new_part);
+                
+            }
+        }
+    }else if (PyObject_TypeCheck(value, &MyListType)){
+        MyList* value_as_my_list = (MyList*) value;
+        if(value_as_my_list->value != NULL){
+            MyList* old_part = (MyList*)MyListType.tp_alloc(&MyListType, 0);
+            old_part->value = self->value;
+            old_part->next = self->next;
+
+            
+            self->value = value_as_my_list->value;
+            Py_INCREF(self->value);
+            self->next = NULL;
+
+            MyList* src = value_as_my_list->next;
+            MyList* current = self;
+            while(src != NULL){
+                MyList* new_node = (MyList*)MyListType.tp_alloc(&MyListType, 0);
+                new_node->value = src->value;
+                Py_XINCREF(new_node->value);
+                new_node->next = NULL;
+                current->next = new_node;
+                current = new_node;
+                src = src->next;
+            }
+            current->next = old_part;
+
+        }
+        // new_part->value = NULL;
+        // new_part->next = NULL;
+        // Py_TYPE(new_part)->tp_free((PyObject*)new_part);
+    }else{
+        MyList* new_node = (MyList*)MyListType.tp_alloc(&MyListType, 0);
+        new_node->value = value;
+        Py_XINCREF(new_node->value);
+        new_node->next = NULL;
+
+        MyList* old_node = (MyList*)MyListType.tp_alloc(&MyListType,0);
+        old_node->value = self->value;
+        old_node->next = self->next;
+
+        new_node->next = old_node;
+
+        self->value = new_node->value;
+        self->next = new_node->next;
+
+        Py_TYPE(new_node)->tp_free((PyObject*)new_node);
+
     }
     Py_RETURN_NONE;
 }

@@ -25,6 +25,7 @@ static PyMethodDef MyList_methods[] = {
     {"get", get, METH_VARARGS, "return element on position x"},
     {"pop", pop, METH_NOARGS, "delete last element"},
     {"updateAt", updateAt, METH_VARARGS, "update value on index"},
+    {"prepend", prepend, METH_VARARGS, "add elemetn to the start of list"},
     {NULL}
 };
 
