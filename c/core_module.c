@@ -59,6 +59,26 @@ Custom_init(PyObject* op, PyObject* args, PyObject* kwds){
                 }
             }
         }
+        else if (PyObject_TypeCheck(value, &MyListType)){
+            MyList* value_as_my_list = (MyList*) value;
+            if(value_as_my_list->value != NULL){
+                self->value = value_as_my_list->value;
+                Py_INCREF(self->value);
+                self->next = NULL;
+
+                MyList* src = value_as_my_list->next;
+                MyList* current = self;
+                while(src != NULL){
+                    MyList* new_node = (MyList*)MyListType.tp_alloc(&MyListType, 0);
+                    new_node->value = src->value;
+                    Py_XINCREF(new_node->value);
+                    new_node->next = NULL;
+                    current->next = new_node;
+                    current = new_node;
+                    src = src->next;
+                }
+            }
+        }
         else{
             if (value){
             Py_XSETREF(self->value, Py_NewRef(value));

@@ -20,12 +20,13 @@ static PyMemberDef MyList_members[] = {
 
 // description of added methods
 static PyMethodDef MyList_methods[] = {
-    {"show", show, METH_NOARGS, "show list"},
+    {"show", show_line, METH_NOARGS, "show list"},
     {"append", append,  METH_VARARGS, "add element to the end of list"},
     {"get", get, METH_VARARGS, "return element on position x"},
     {"pop", pop, METH_NOARGS, "delete last element"},
     {"updateAt", updateAt, METH_VARARGS, "update value on index"},
     {"prepend", prepend, METH_VARARGS, "add elemetn to the start of list"},
+    {"insert", insert, METH_VARARGS, "insert one list into another"},
     {NULL}
 };
 

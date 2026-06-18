@@ -14,4 +14,7 @@ append(PyObject* op, PyObject* args);
 PyObject*
 prepend(PyObject* op, PyObject* args); 
 
+//method to build on list into another
+PyObject*
+insert(PyObject* op, PyObject* args);
 #endif

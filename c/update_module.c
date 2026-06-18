@@ -239,3 +239,62 @@ prepend(PyObject* op, PyObject* args){
     }
     Py_RETURN_NONE;
 }
+
+PyObject*
+insert(PyObject* op, PyObject* args){
+    MyList* self = (MyList*)op;
+    int req_pos = 0;
+    PyObject* value = NULL;
+    
+    if(!PyArg_ParseTuple(args, "O|i", &value, &req_pos)){  
+        PyErr_SetString(PyExc_TypeError, "This arguments are not suppose to bu used with this function! Or maybe you didn't send any arguments");
+        return NULL;
+    }
+    if(req_pos < 0){
+        PyErr_SetString(PyExc_IndexError, "index is out of range");
+        return NULL;
+    }
+    if(!PyObject_TypeCheck(value, &MyListType)){
+        if(PyErr_WarnEx(PyExc_UserWarning, 
+            "insert() is designed for MyList objects. Use append() or prepend() for single values.", 1) < 0){
+            return NULL;
+        }
+    }
+    
+    if(req_pos == 0){
+        MyList* old_node = (MyList*)MyListType.tp_alloc(&MyListType, 0);
+        old_node->value = self->value;
+        old_node->next = self->next;
+        
+        self->value = value;
+        Py_XINCREF(self->value);
+        self->next = old_node;
+        
+        Py_RETURN_NONE;
+    }
+
+    
+    int i = 0;
+    MyList* current = self;
+    while(i != req_pos - 1){  
+        if(current == NULL){
+            PyErr_SetString(PyExc_IndexError, "index is out of range");
+            return NULL;
+        }
+        current = current->next;
+        i++;
+    }
+    if(current == NULL){
+        PyErr_SetString(PyExc_IndexError, "index is out of range");
+        return NULL;
+    }
+
+    
+    MyList* new_node = (MyList*)MyListType.tp_alloc(&MyListType, 0);
+    new_node->value = value;
+    Py_XINCREF(new_node->value);  
+    new_node->next = current->next;
+    current->next = new_node;
+
+    Py_RETURN_NONE;
+}

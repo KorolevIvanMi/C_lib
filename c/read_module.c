@@ -4,7 +4,7 @@
 #include <read_module.h>
 
 
-PyObject*
+static PyObject*
 show(PyObject *op, PyObject *Py_UNUSED(dummy)){
     if(op == NULL){
         PyErr_SetString(PyExc_ValueError, "List is NULL");
@@ -12,21 +12,28 @@ show(PyObject *op, PyObject *Py_UNUSED(dummy)){
     }
     MyList* self = (MyList* ) op;
     MyList* current = self;
+    printf("[");
     while(current != NULL){
         if (current->value != NULL){
-            PyObject* repr = PyObject_Repr(current->value);
-            if (repr != NULL){
-                const char* str = PyUnicode_AsUTF8(repr);
-                if(str != NULL){
-                    printf("%s", str);
-                    if(current->next != NULL){
-                        printf(", ");
-                    }
-                }
-                Py_DECREF(repr);
+            if(PyObject_TypeCheck(current->value, &MyListType)){
+                MyList* val = (MyList*)current->value;
+                show(current->value,NULL );
+                printf(", ");
             }else{
-                printf("<?>");
-                PyErr_Clear();
+                PyObject* repr = PyObject_Repr(current->value);
+                if (repr != NULL){
+                    const char* str = PyUnicode_AsUTF8(repr);
+                    if(str != NULL){
+                        printf("%s", str);
+                        if(current->next != NULL){
+                            printf(", ");
+                        }
+                    }
+                    Py_DECREF(repr);
+                }else{
+                    printf("<?>");
+                    PyErr_Clear();
+                }
             }
         }else{
             printf("NULL");
@@ -34,10 +41,19 @@ show(PyObject *op, PyObject *Py_UNUSED(dummy)){
         current = current->next;
         
     }
-    printf("\n");
+    printf("]");
     fflush(stdout);
     Py_RETURN_NONE;
 }
+
+PyObject*
+show_line(PyObject *op, PyObject *Py_UNUSED(dummy)){
+    PyObject* result = show(op, NULL);
+    printf("\n");
+    fflush(stdout);
+    return result;
+}
+
 
 PyObject*
 get(PyObject* op, PyObject* args){
