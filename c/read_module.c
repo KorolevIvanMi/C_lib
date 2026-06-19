@@ -68,9 +68,8 @@ get(PyObject* op, PyObject* args){
         return NULL;
     }
     int i = 0;
-    if(self == NULL) {
-        PyErr_SetString(PyExc_ValueError, "List is NULL");
-        return NULL;
+    if(self->value == NULL) {
+        Py_RETURN_NONE;
     }
     MyList* current = self;
     while( i != req_pos){

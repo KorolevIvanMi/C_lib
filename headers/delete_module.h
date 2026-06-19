@@ -6,4 +6,7 @@
 PyObject*
 pop(PyObject* op, PyObject* Py_UNUSED(dummy));
 
+//method of deleting first item
+PyObject*
+pop_front(PyObject* op, PyObject* Py_UNUSED(dummy));
 #endif
