@@ -28,7 +28,7 @@ pop(PyObject* op, PyObject* Py_UNUSED(dummy)){
 }
 
 PyObject*
-pop_front(PyObject* op, PyObject* Py_UNUSED(dummy)){
+popFront(PyObject* op, PyObject* Py_UNUSED(dummy)){
     MyList* self = (MyList*) op;
     if(self->value == NULL){
         Py_RETURN_NONE;
@@ -44,5 +44,61 @@ pop_front(PyObject* op, PyObject* Py_UNUSED(dummy)){
     self->next = next_node->next;
     Py_TYPE(next_node)->tp_free(next_node);
     return value;
+}
 
+PyObject*
+popAt(PyObject* op, PyObject* args){
+    MyList* self = (MyList*) op;
+
+    int req_pos = 0;
+    if(!PyArg_ParseTuple(args, "i", &req_pos)){
+        PyErr_SetString(PyExc_TypeError, "This arguments are not suppose to bu used with this function! Or maybe you didn't send any arguments");
+        return NULL;
+    }
+    if (req_pos < 0){
+        PyErr_SetString(PyExc_IndexError, "index is out of range");
+        return NULL;
+    }
+
+    if(self->value == NULL){
+        Py_RETURN_NONE;
+    }
+
+    int i = 0;
+    PyObject* value = self->value;
+    if (req_pos == 0){
+
+        value = self->value;
+        MyList* new_l = self->next;
+        self->value = new_l->value;
+        self->next = new_l->next;
+
+        Py_TYPE(new_l)->tp_free(new_l);
+        return value;
+    }else{
+        MyList* current = self->next;
+        MyList* curret_prev = self;
+        while(i!=req_pos-1){
+            if(current == NULL){
+                PyErr_SetString(PyExc_IndexError, "index is out of range");
+                return NULL;
+            }
+            else{
+                current = current->next;
+                curret_prev= curret_prev->next;
+            }
+            i = i+1;
+        }
+        if(current == NULL){
+            PyErr_SetString(PyExc_IndexError, "index is out of range");
+            return NULL;
+        }
+        value = current->value;
+        current->value = NULL;
+        curret_prev->next = current->next;
+        Py_TYPE(current)->tp_free(current);
+        return value;
+    }
+    Py_RETURN_NONE;
+    
 }
