@@ -30,6 +30,46 @@ static MyList* from_PyList_to_MyList(PyObject* value){
     
 }
 
+static MyList*
+copy_my_list(MyList* src) {
+    if (!src) return NULL;
+    
+    MyList* head = (MyList*)MyListType.tp_alloc(&MyListType, 0);
+    if (!head) return NULL;
+    
+    head->value = src->value ? Py_NewRef(src->value) : NULL;
+    head->next = NULL;
+    
+    MyList* current = head;
+    MyList* src_current = src->next;
+    
+    while (src_current) {
+        MyList* new_node = (MyList*)MyListType.tp_alloc(&MyListType, 0);
+        if (!new_node) {
+            // Очистка при ошибке
+            return NULL;
+        }
+        new_node->value = src_current->value ? Py_NewRef(src_current->value) : NULL;
+        new_node->next = NULL;
+        current->next = new_node;
+        current = new_node;
+        src_current = src_current->next;
+    }
+    
+    return head;
+}
+
+// Вспомогательная функция: найти последний элемент
+static MyList*
+get_last(MyList* head) {
+    if (!head) return NULL;
+    MyList* current = head;
+    while (current->next) {
+        current = current->next;
+    }
+    return current;
+}
+
 PyObject*
 updateAt(PyObject* op, PyObject* args){
 
@@ -246,13 +286,37 @@ insert(PyObject* op, PyObject* args){
     int req_pos = 0;
     PyObject* value = NULL;
     int unpack = 0;
+    
     if(!PyArg_ParseTuple(args, "O|ii", &value, &req_pos, &unpack)){  
-        PyErr_SetString(PyExc_TypeError, "This arguments are not suppose to bu used with this function! Or maybe you didn't send any arguments");
+        PyErr_SetString(PyExc_TypeError, "Invalid arguments for insert()");
         return NULL;
     }
+    
     if(req_pos < 0){
         PyErr_SetString(PyExc_IndexError, "index is out of range");
         return NULL;
+    }
+    if (self->value == NULL && self->next == NULL) {
+        if (PyObject_TypeCheck(value, &MyListType) && unpack == 1) {
+            MyList* src = (MyList*)value;
+            MyList* copy = copy_my_list(src);
+            if (copy) {
+                self->value = copy->value;
+                self->next = copy->next;
+                Py_TYPE(copy)->tp_free((PyObject*)copy);
+            }
+        } else if (PyList_Check(value) && unpack == 1) {
+            MyList* new_list = from_PyList_to_MyList(value);
+            if (new_list) {
+                self->value = new_list->value;
+                self->next = new_list->next;
+                Py_TYPE(new_list)->tp_free((PyObject*)new_list);
+            }
+        } else {
+            self->value = Py_NewRef(value);
+            self->next = NULL;
+        }
+        Py_RETURN_NONE;
     }
     if(PyObject_TypeCheck(value, &MyListType)){
         if(unpack == 0){
@@ -267,6 +331,7 @@ insert(PyObject* op, PyObject* args){
                 
                 Py_RETURN_NONE;
             }
+            
             int i = 0;
             MyList* current = self;
             while(i != req_pos - 1){  
@@ -281,7 +346,6 @@ insert(PyObject* op, PyObject* args){
                 PyErr_SetString(PyExc_IndexError, "index is out of range");
                 return NULL;
             }
-
             
             MyList* new_node = (MyList*)MyListType.tp_alloc(&MyListType, 0);
             new_node->value = value;
@@ -289,148 +353,130 @@ insert(PyObject* op, PyObject* args){
             new_node->next = current->next;
             current->next = new_node;
         }
-        else{
+        else {
             MyList* value_as_my_list = (MyList*) value;
-        
-            // Вставка в начало
-            if(req_pos == 0){
-                // Находим конец value_as_my_list
-                MyList* last = value_as_my_list;
-                while(last->next != NULL){
-                    last = last->next;
-                }
-                
-                // Сохраняем старые данные
-                MyList* old_node = (MyList*)MyListType.tp_alloc(&MyListType, 0);
-                old_node->value = self->value;
-                old_node->next = self->next;
-                
-                // Копируем первый элемент
-                self->value = value_as_my_list->value;
-                Py_XINCREF(self->value);
-                self->next = NULL;
-                
-                // Копируем остальные элементы
-                MyList* src = value_as_my_list->next;
-                MyList* current = self;
-                while(src != NULL){
-                    MyList* new_node = (MyList*)MyListType.tp_alloc(&MyListType, 0);
-                    new_node->value = src->value;
-                    Py_XINCREF(new_node->value);
-                    new_node->next = NULL;
-                    current->next = new_node;
-                    current = new_node;
-                    src = src->next;
-                }
-                
-                // Присоединяем старые данные
-                current->next = old_node;
-                
-                Py_RETURN_NONE;
+            MyList* copy = copy_my_list(value_as_my_list);
+            if (!copy) {
+                PyErr_NoMemory();
+                return NULL;
             }
             
-            // Вставка в середину/конец
-            int i = 0;
-            MyList* current = self;
-            while(i != req_pos - 1){
+            MyList* last = get_last(copy);
+            
+            if(req_pos == 0){
+                last->next = self;
+                PyObject* old_value = self->value;
+                self->value = copy->value;
+                self->next = copy->next;
+                Py_XDECREF(old_value);
+                
+                copy->value = NULL;
+                copy->next = NULL;
+                Py_TYPE(copy)->tp_free((PyObject*)copy);
+            } else {
+                int i = 0;
+                MyList* current = self;
+                while(i != req_pos - 1){
+                    if(current == NULL){
+                        PyErr_SetString(PyExc_IndexError, "index is out of range");
+                        return NULL;
+                    }
+                    current = current->next;
+                    i++;
+                }
                 if(current == NULL){
                     PyErr_SetString(PyExc_IndexError, "index is out of range");
                     return NULL;
                 }
-                current = current->next;
-                i++;
+                last->next = current->next;
+                current->next = copy;
             }
-            if(current == NULL){
-                PyErr_SetString(PyExc_IndexError, "index is out of range");
-                return NULL;
-            }
-            
-            // Сохраняем хвост
-            MyList* tail = current->next;
-            
-            // Вставляем первый элемент
-            MyList* new_node = (MyList*)MyListType.tp_alloc(&MyListType, 0);
-            new_node->value = value_as_my_list->value;
-            Py_XINCREF(new_node->value);
-            new_node->next = NULL;
-            current->next = new_node;
-            current = new_node;
-            
-            // Вставляем остальные элементы
-            MyList* src = value_as_my_list->next;
-            while(src != NULL){
-                MyList* new_node = (MyList*)MyListType.tp_alloc(&MyListType, 0);
-                new_node->value = src->value;
-                Py_XINCREF(new_node->value);
-                new_node->next = NULL;
-                current->next = new_node;
-                current = new_node;
-                src = src->next;
-            }
-            
-            // Присоединяем хвост
-            current->next = tail;
         }
     }
     else if(PyList_Check(value)){
-        int len = PyList_GET_SIZE(value);
-        if (len == 0){
-            Py_RETURN_NONE;  
-        }
-        
-        MyList* new_part = from_PyList_to_MyList(value);
-        
-        // Вставка в начало
-        if(req_pos == 0){
-            MyList* last = new_part;
-            while(last->next != NULL){
-                last = last->next;
-            }
-            last->next = self->next;
-            
-            PyObject* old_value = self->value;
-            self->value = new_part->value;
-            Py_XINCREF(self->value);
-            self->next = new_part->next;
-            Py_XDECREF(old_value);
-            
-            new_part->value = NULL;
-            new_part->next = NULL;
-            Py_TYPE(new_part)->tp_free((PyObject*)new_part);
-            
-            Py_RETURN_NONE;
-        }
-        
-        // Вставка в середину/конец
-        int i = 0;
-        MyList* current = self;
-        while(i != req_pos - 1){
-            if(current == NULL){
-                PyErr_SetString(PyExc_IndexError, "index is out of range");
+        if (unpack == 0) {
+            MyList* new_list = from_PyList_to_MyList(value);
+            if (!new_list) {
+                PyErr_NoMemory();
                 return NULL;
             }
-            current = current->next;
-            i++;
+            if(req_pos == 0){
+                MyList* old_node = (MyList*)MyListType.tp_alloc(&MyListType, 0);
+                old_node->value = self->value;
+                old_node->next = self->next;
+                
+                self->value = (PyObject*)new_list;
+                Py_INCREF(self->value);
+                self->next = old_node;
+            } else {
+                int i = 0;
+                MyList* current = self;
+                while(i != req_pos - 1){
+                    if(current == NULL){
+                        PyErr_SetString(PyExc_IndexError, "index is out of range");
+                        return NULL;
+                    }
+                    current = current->next;
+                    i++;
+                }
+                if(current == NULL){
+                    PyErr_SetString(PyExc_IndexError, "index is out of range");
+                    return NULL;
+                }
+                
+                MyList* new_node = (MyList*)MyListType.tp_alloc(&MyListType, 0);
+                new_node->value = (PyObject*)new_list;
+                Py_INCREF(new_node->value);
+                new_node->next = current->next;
+                current->next = new_node;
+            }
+        } else {
+            // Распаковка Python list
+            MyList* new_part = from_PyList_to_MyList(value);
+            if (!new_part) {
+                PyErr_NoMemory();
+                return NULL;
+            }
+            
+            MyList* last = get_last(new_part);
+            
+            if(req_pos == 0){
+                // Вставка в начало
+                last->next = self;
+                
+                PyObject* old_value = self->value;
+                self->value = new_part->value;
+                self->next = new_part->next;
+                Py_XDECREF(old_value);
+                
+                new_part->value = NULL;
+                new_part->next = NULL;
+                Py_TYPE(new_part)->tp_free((PyObject*)new_part);
+            } else {
+                // Вставка в середину/конец
+                int i = 0;
+                MyList* current = self;
+                while(i != req_pos - 1){
+                    if(current == NULL){
+                        PyErr_SetString(PyExc_IndexError, "index is out of range");
+                        return NULL;
+                    }
+                    current = current->next;
+                    i++;
+                }
+                if(current == NULL){
+                    PyErr_SetString(PyExc_IndexError, "index is out of range");
+                    return NULL;
+                }
+                
+                last->next = current->next;
+                current->next = new_part;
+            }
         }
-        if(current == NULL){
-            PyErr_SetString(PyExc_IndexError, "index is out of range");
-            return NULL;
-        }
-        
-        // Находим конец new_part
-        MyList* last = new_part;
-        while(last->next != NULL){
-            last = last->next;
-        }
-        
-        // Вставляем: current -> new_part -> старый current->next
-        last->next = current->next;
-        current->next = new_part;
     }
-    
-    else{
+    else {
+        // Обычное значение
         if(req_pos == 0){
-            // Вставка в начало
             MyList* old_node = (MyList*)MyListType.tp_alloc(&MyListType, 0);
             old_node->value = self->value;
             old_node->next = self->next;
@@ -442,7 +488,6 @@ insert(PyObject* op, PyObject* args){
             Py_RETURN_NONE;
         }
         
-        // Вставка в середину/конец
         int i = 0;
         MyList* current = self;
         while(i != req_pos - 1){
@@ -463,6 +508,7 @@ insert(PyObject* op, PyObject* args){
         Py_XINCREF(new_node->value);
         new_node->next = current->next;
         current->next = new_node;
-        }
-        Py_RETURN_NONE;
+    }
+    Py_RETURN_NONE;
 }
+

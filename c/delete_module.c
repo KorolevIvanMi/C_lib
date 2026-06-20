@@ -24,7 +24,12 @@ pop(PyObject* op, PyObject* Py_UNUSED(dummy)){
     Py_TYPE(current->next)->tp_free(current->next);
     current->next = NULL;
     
-    return value;
+    if (value == NULL){
+        Py_RETURN_NONE;
+    }
+    else{
+        return value;
+    };
 }
 
 PyObject*
@@ -43,7 +48,12 @@ popFront(PyObject* op, PyObject* Py_UNUSED(dummy)){
     self->value = next_node->value;
     self->next = next_node->next;
     Py_TYPE(next_node)->tp_free(next_node);
-    return value;
+    if (value == NULL){
+        Py_RETURN_NONE;
+    }
+    else{
+        return value;
+    };
 }
 
 PyObject*
@@ -74,7 +84,12 @@ popAt(PyObject* op, PyObject* args){
         self->next = new_l->next;
 
         Py_TYPE(new_l)->tp_free(new_l);
-        return value;
+        if (value == NULL){
+            Py_RETURN_NONE;
+        }
+        else{
+            return value;
+        };
     }else{
         MyList* current = self->next;
         MyList* curret_prev = self;
@@ -97,7 +112,12 @@ popAt(PyObject* op, PyObject* args){
         current->value = NULL;
         curret_prev->next = current->next;
         Py_TYPE(current)->tp_free(current);
-        return value;
+        if (value == NULL){
+            Py_RETURN_NONE;
+        }
+        else{
+            return value;
+        };
     }
     Py_RETURN_NONE;
     
