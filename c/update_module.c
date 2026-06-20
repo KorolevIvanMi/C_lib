@@ -46,7 +46,6 @@ copy_my_list(MyList* src) {
     while (src_current) {
         MyList* new_node = (MyList*)MyListType.tp_alloc(&MyListType, 0);
         if (!new_node) {
-            // Очистка при ошибке
             return NULL;
         }
         new_node->value = src_current->value ? Py_NewRef(src_current->value) : NULL;
@@ -305,7 +304,7 @@ insert(PyObject* op, PyObject* args){
                 self->next = copy->next;
                 Py_TYPE(copy)->tp_free((PyObject*)copy);
             }
-        } else if (PyList_Check(value) && unpack == 1) {
+        } else if (PyList_Check(value)) {
             MyList* new_list = from_PyList_to_MyList(value);
             if (new_list) {
                 self->value = new_list->value;

@@ -16,5 +16,7 @@ show_line(PyObject *op, PyObject *Py_UNUSED(dummy));
 PyObject*
 get(PyObject* op, PyObject* args);
 
-
+// method of taking an element by index for []
+PyObject*
+get_for_seq(PyObject* op, Py_ssize_t req_pos);
 #endif

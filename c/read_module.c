@@ -89,3 +89,33 @@ get(PyObject* op, PyObject* args){
     Py_INCREF(current->value); 
     return current->value;
 }
+
+PyObject*
+get_for_seq(PyObject* op, Py_ssize_t req_pos){
+    MyList* self = (MyList*) op;
+    if (req_pos < 0){
+        PyErr_SetString(PyExc_IndexError, "index is out of range");
+        return NULL;
+    }
+    int i = 0;
+    if(self->value == NULL) {
+        Py_RETURN_NONE;
+    }
+    MyList* current = self;
+    while( i != req_pos){
+        if(current == NULL){
+            PyErr_SetString(PyExc_IndexError, "index is out of range");
+            return NULL;
+        }
+        else{
+            current = current->next;
+        }
+        i = i+1;
+    }
+    if(current == NULL){
+        PyErr_SetString(PyExc_IndexError, "index is out of range");
+        return NULL;
+    }
+    Py_INCREF(current->value); 
+    return current->value;
+}

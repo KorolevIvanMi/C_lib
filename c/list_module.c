@@ -32,6 +32,10 @@ static PyMethodDef MyList_methods[] = {
     {NULL}
 };
 
+static PySequenceMethods MyList_as_sequence = {
+    .sq_item = get_for_seq,
+};
+
 // data type descriptions for MyList with the purpose of various functions
 PyTypeObject MyListType = {
 .ob_base = PyVarObject_HEAD_INIT(NULL, 0)
@@ -48,6 +52,7 @@ PyTypeObject MyListType = {
     .tp_dealloc = Custom_dealloc,
     .tp_members = MyList_members,
     .tp_methods = MyList_methods,
+    .tp_as_sequence = &MyList_as_sequence,
 };
 
 // module init
