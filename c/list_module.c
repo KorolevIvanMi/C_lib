@@ -14,21 +14,21 @@
 
 // description of class fields
 static PyMemberDef MyList_members[] = {
-    {"value", Py_T_OBJECT_EX, offsetof(MyList, value), 0, "value of the list"},
+    {"value", Py_T_OBJECT_EX, offsetof(MyList, value), 0, "value of the list, can be any type"},
     {NULL, 0, 0, 0, NULL}
 };
 
 // description of added methods
 static PyMethodDef MyList_methods[] = {
-    {"show", show_line, METH_NOARGS, "show list"},
-    {"append", append,  METH_VARARGS, "add element to the end of list"},
-    {"get", get, METH_VARARGS, "return element on position x"},
-    {"pop", pop, METH_NOARGS, "delete last element"},
-    {"popFront", popFront, METH_NOARGS, "delete first element"},
-    {"popAt", popAt, METH_VARARGS, "delete element on index"},
-    {"updateAt", updateAt, METH_VARARGS, "update value on index"},
-    {"prepend", prepend, METH_VARARGS, "add elemetn to the start of list"},
-    {"insert", insert, METH_VARARGS, "insert one list into another"},
+    {"show", show_line, METH_NOARGS, "List.show(): \nshow all list elements"},
+    {"append", append,  METH_VARARGS, "List.append(x): \n x - AnyType value \n Add element to the end of the List"},
+    {"prepend", prepend, METH_VARARGS, "List.prepend(x): \n x - AnyType value \n Add element to the begginig of the List"},
+    {"get", get, METH_VARARGS, "List.get(position):\n position - int value. Position of the element\n Return value on the position"},
+    {"pop", pop, METH_NOARGS, "List.pop(): \n Delete last element of the list"},
+    {"popFront", popFront, METH_NOARGS, "List.popFront(): \n Delete first element of the list"},
+    {"popAt", popAt, METH_VARARGS, "List.popAt(position)\n position - int value. Position of the element \n Delete element on the position"},
+    {"updateAt", updateAt, METH_VARARGS, "List.updateAt(value, position)\n value - AnyType value \n position - int value. Position of the element \n Update value of the element on the position \n WARNING: Intended for replacing single values only"},
+    {"insert", insert, METH_VARARGS, "List.insert(x, position, flag)\n x - AnyType value \n position - int value \n flag - bool flag. If True - List is expanded into elements, if False - creates a nested list \n Insert value on the position"},
     {NULL}
 };
 
@@ -36,7 +36,10 @@ static PyMethodDef MyList_methods[] = {
 PyTypeObject MyListType = {
 .ob_base = PyVarObject_HEAD_INIT(NULL, 0)
     .tp_name = "list.List",
-    .tp_doc = PyDoc_STR("My list"),
+    .tp_doc = PyDoc_STR("My list\n\n"
+                    "List() -> new empty list\n"
+                    "List(iterable) -> new list initialized from iterable's items\n"
+                    "List(value) -> new list with single element"),
     .tp_basicsize = sizeof(MyList),
     .tp_itemsize = 0,
     .tp_flags = Py_TPFLAGS_DEFAULT | Py_TPFLAGS_BASETYPE,
