@@ -20,6 +20,8 @@ get(PyObject* op, PyObject* args);
 PyObject*
 get_for_seq(PyObject* op, Py_ssize_t req_pos);
 
+PyObject*
+length(PyObject* op, PyObject *Py_UNUSED(dummy));
 Py_ssize_t
 length_for_seq(PyObject* op);
 #endif

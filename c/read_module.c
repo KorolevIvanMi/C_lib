@@ -119,6 +119,22 @@ get_for_seq(PyObject* op, Py_ssize_t req_pos){
     return current->value;
 }
 
+PyObject*
+length(PyObject* op, PyObject *Py_UNUSED(dummy)){
+    Py_ssize_t len = 0;
+    MyList* self = (MyList*) op;
+    if(self->value==NULL && self->next == NULL){
+        return PyLong_FromLong(len);
+    }
+    MyList* current = self;
+    while(current!=NULL){
+        len++;
+        current= current->next;
+    }
+
+    return PyLong_FromLong(len);
+}
+
 Py_ssize_t
 length_for_seq(PyObject* op){
     Py_ssize_t len = 0;
