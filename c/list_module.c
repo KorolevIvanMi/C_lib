@@ -34,11 +34,12 @@ static PyMethodDef MyList_methods[] = {
 
 static PySequenceMethods MyList_as_sequence = {
     .sq_item = get_for_seq,
+    .sq_ass_item = updateAt_for_seq,
 };
 
 // data type descriptions for MyList with the purpose of various functions
 PyTypeObject MyListType = {
-.ob_base = PyVarObject_HEAD_INIT(NULL, 0)
+    .ob_base = PyVarObject_HEAD_INIT(NULL, 0)
     .tp_name = "list.List",
     .tp_doc = PyDoc_STR("My list\n\n"
                     "List() -> new empty list\n"

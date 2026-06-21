@@ -5,6 +5,8 @@
 // method of update value on index
 PyObject*
 updateAt(PyObject* op, PyObject* args);
+int
+updateAt_for_seq(PyObject* op,  Py_ssize_t pos, PyObject* value);
 
 // method of adding to the end of a list
 PyObject*
@@ -17,4 +19,7 @@ prepend(PyObject* op, PyObject* args);
 //method to build on list into another
 PyObject*
 insert(PyObject* op, PyObject* args);
+
+
+
 #endif

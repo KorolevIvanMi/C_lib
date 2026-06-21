@@ -110,6 +110,38 @@ updateAt(PyObject* op, PyObject* args){
 
 }
 
+int 
+updateAt_for_seq(PyObject* op,  Py_ssize_t pos, PyObject* value){
+    if (op == NULL){
+        PyErr_SetString(PyExc_ValueError, "List is NULL");
+        return -1;
+    }
+    
+    MyList* self = (MyList*) op;
+    if(pos < 0){
+        PyErr_SetString(PyExc_IndexError, "index is out of range");
+        return -1;
+    }
+
+    int i = 0;
+    MyList* current = self;
+    while( i != pos){
+        if(current == NULL){
+            PyErr_SetString(PyExc_IndexError, "index is out of range");
+            return -1;
+        }
+        else{
+            current = current->next;
+        }
+        i = i+1;
+    }
+    if (current == NULL){
+        PyErr_SetString(PyExc_IndexError, "index is out of range");
+        return -1;
+    }
+    Py_XSETREF(current->value, Py_NewRef(value));
+    return 0;
+}
 
 PyObject*
 append(PyObject* op, PyObject* args){
