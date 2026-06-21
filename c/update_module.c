@@ -118,10 +118,10 @@ updateAt_for_seq(PyObject* op,  Py_ssize_t pos, PyObject* value){
     }
     
     MyList* self = (MyList*) op;
-    if(pos < 0){
-        PyErr_SetString(PyExc_IndexError, "index is out of range");
-        return -1;
-    }
+    // if(pos < 0){
+    //     PyErr_SetString(PyExc_IndexError, "index is out of range");
+    //     return -1;
+    // }
 
     int i = 0;
     MyList* current = self;

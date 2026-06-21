@@ -29,10 +29,12 @@ static PyMethodDef MyList_methods[] = {
     {"popAt", popAt, METH_VARARGS, "List.popAt(position)\n position - int value. Position of the element \n Delete element on the position"},
     {"updateAt", updateAt, METH_VARARGS, "List.updateAt(value, position)\n value - AnyType value \n position - int value. Position of the element \n Update value of the element on the position \n WARNING: Intended for replacing single values only"},
     {"insert", insert, METH_VARARGS, "List.insert(x, position, flag)\n x - AnyType value \n position - int value \n flag - bool flag. If True - List is expanded into elements, if False - creates a nested list \n Insert value on the position"},
+    // {"length", length, METH_NOARGS, "List.length(): \n return amout of elements in the list"},
     {NULL}
 };
 
 static PySequenceMethods MyList_as_sequence = {
+    .sq_length = length_for_seq,
     .sq_item = get_for_seq,
     .sq_ass_item = updateAt_for_seq,
 };

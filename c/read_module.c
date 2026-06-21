@@ -54,7 +54,6 @@ show_line(PyObject *op, PyObject *Py_UNUSED(dummy)){
     return result;
 }
 
-
 PyObject*
 get(PyObject* op, PyObject* args){
     MyList* self = (MyList*) op;
@@ -93,10 +92,10 @@ get(PyObject* op, PyObject* args){
 PyObject*
 get_for_seq(PyObject* op, Py_ssize_t req_pos){
     MyList* self = (MyList*) op;
-    if (req_pos < 0){
-        PyErr_SetString(PyExc_IndexError, "index is out of range");
-        return NULL;
-    }
+    // if (req_pos < 0){
+    //     PyErr_SetString(PyExc_IndexError, "index is out of range");
+    //     return NULL;
+    // }
     int i = 0;
     if(self->value == NULL) {
         Py_RETURN_NONE;
@@ -118,4 +117,20 @@ get_for_seq(PyObject* op, Py_ssize_t req_pos){
     }
     Py_INCREF(current->value); 
     return current->value;
+}
+
+Py_ssize_t
+length_for_seq(PyObject* op){
+    Py_ssize_t len = 0;
+    MyList* self = (MyList*) op;
+    if(self->value==NULL && self->next == NULL){
+        return len;
+    }
+    MyList* current = self;
+    while(current!=NULL){
+        len++;
+        current= current->next;
+    }
+
+    return len;
 }

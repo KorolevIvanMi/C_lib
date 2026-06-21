@@ -19,4 +19,7 @@ get(PyObject* op, PyObject* args);
 // method of taking an element by index for []
 PyObject*
 get_for_seq(PyObject* op, Py_ssize_t req_pos);
+
+Py_ssize_t
+length_for_seq(PyObject* op);
 #endif
