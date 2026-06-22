@@ -150,3 +150,47 @@ length_for_seq(PyObject* op){
 
     return len;
 }
+
+PyObject*
+max(PyObject* op, PyObject* Py_UNUSED(dummy)){
+    MyList* self = (MyList*) op;
+    if(self->value == NULL && self->next == NULL){
+        PyErr_SetString(PyExc_ValueError, "max() on empty list");
+        return NULL;
+    }
+
+    PyObject* max_value = self->value;
+    Py_XINCREF(max_value);
+    MyList* current = self->next;
+    while(current != NULL){
+        if (PyObject_RichCompareBool(current->value, max_value, Py_GT) == true){
+            max_value = current->value;
+            Py_XINCREF(max_value);
+        }
+        current= current->next;
+    }
+
+    return max_value;
+}
+
+PyObject*
+min(PyObject* op, PyObject* Py_UNUSED(dummy)){
+    MyList* self = (MyList*) op;
+    if(self->value == NULL && self->next == NULL){
+        PyErr_SetString(PyExc_ValueError, "max() on empty list");
+        return NULL;
+    }
+
+    PyObject* max_value = self->value;
+    Py_XINCREF(max_value);
+    MyList* current = self->next;
+    while(current != NULL){
+        if (PyObject_RichCompareBool(current->value, max_value, Py_LT) == true){
+            max_value = current->value;
+            Py_XINCREF(max_value);
+        }
+        current= current->next;
+    }
+
+    return max_value;
+}

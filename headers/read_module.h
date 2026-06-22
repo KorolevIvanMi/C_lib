@@ -20,8 +20,17 @@ get(PyObject* op, PyObject* args);
 PyObject*
 get_for_seq(PyObject* op, Py_ssize_t req_pos);
 
+//method to get length of the list
 PyObject*
 length(PyObject* op, PyObject *Py_UNUSED(dummy));
 Py_ssize_t
 length_for_seq(PyObject* op);
+
+//method to get the maximum element of the list
+PyObject*
+max(PyObject* op, PyObject* Py_UNUSED(dummy));
+
+//method to get the minimun element of the list
+PyObject*
+min(PyObject* op, PyObject* Py_UNUSED(dummy));
 #endif
