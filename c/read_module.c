@@ -270,3 +270,52 @@ repr_line(PyObject *op) {
     
     return with_newline;
 }
+
+PyObject*
+contains(PyObject* op, PyObject* args){
+    MyList* self = (MyList*) op;
+    MyList* current = self;
+
+    PyObject* req_value = NULL;
+    if(!PyArg_ParseTuple(args, "O", &req_value)){
+        PyErr_SetString(PyExc_TypeError, "This arguments are not suppose to bu used with this function! Or maybe you didn't send any arguments");
+        return NULL;
+    }
+    if(current->value == NULL && current->next == NULL ){
+        Py_RETURN_FALSE;
+    }
+    if(PyObject_TypeCheck(req_value, &MyListType)){
+        MyList* req_value_list = (MyList*) req_value;
+
+        while (current != NULL){
+            if(PyObject_RichCompareBool(current->value, req_value_list->value, Py_EQ) == true){
+                MyList* req_value_list_current = req_value_list;
+                MyList* current_current = current;
+                bool flag = false;
+                while(req_value_list_current != NULL && current_current != NULL){
+
+                    if(PyObject_RichCompareBool(current_current->value, req_value_list_current->value, Py_EQ) == false){
+                        flag = true;
+                        break;
+                    }
+                    current_current = current_current->next;
+                    req_value_list_current = req_value_list_current->next;
+                }
+                if (flag == false){
+                    Py_RETURN_TRUE;
+                }
+            }
+            current = current->next;
+        }
+        Py_RETURN_FALSE;
+    }
+    else{
+        while(current != NULL){
+            if(PyObject_RichCompareBool(current->value, req_value, Py_EQ) == true){
+                Py_RETURN_TRUE;
+            }
+            current = current->next;
+        }
+        Py_RETURN_FALSE;
+    }
+}

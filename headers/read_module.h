@@ -34,10 +34,15 @@ max(PyObject* op, PyObject* Py_UNUSED(dummy));
 PyObject*
 min(PyObject* op, PyObject* Py_UNUSED(dummy));
 
-//method to get string value of my list
+//methods to get string value of my list
 PyObject*
 repr(PyObject* op);
 
 PyObject*
 repr_line(PyObject* op);
+
+//method to check if value in List
+PyObject*
+contains(PyObject* op, PyObject* args);
+
 #endif
