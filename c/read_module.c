@@ -359,3 +359,29 @@ equal(PyObject* op, PyObject* args){
     }
 
 }
+
+PyObject*
+find(PyObject* op, PyObject* args){
+    MyList* self = (MyList*) op;
+    MyList* current = self;
+    int index = -1;
+
+    PyObject* req_value = NULL;
+    if(!PyArg_ParseTuple(args, "O", &req_value)){
+        PyErr_SetString(PyExc_TypeError, "This arguments are not suppose to bu used with this function! Or maybe you didn't send any arguments");
+        return NULL;
+    }
+    if(current->value == NULL && current->next == NULL ){
+        PyLong_FromLong(index);
+    }
+    index = 0;
+    while(current != NULL){
+        if(PyObject_RichCompareBool(current->value, req_value, Py_EQ) == true){
+            PyLong_FromLong(index);
+            break;
+        }
+        current = current->next;
+        index += 1;
+    }
+    PyLong_FromLong(-1);
+}

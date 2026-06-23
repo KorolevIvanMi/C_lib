@@ -20,33 +20,37 @@ get(PyObject* op, PyObject* args);
 PyObject*
 get_for_seq(PyObject* op, Py_ssize_t req_pos);
 
-//method to get length of the list
+// method to get length of the list
 PyObject*
 length(PyObject* op, PyObject *Py_UNUSED(dummy));
 Py_ssize_t
 length_for_seq(PyObject* op);
 
-//method to get the maximum element of the list
+// method to get the maximum element of the list
 PyObject*
 max(PyObject* op, PyObject* Py_UNUSED(dummy));
 
-//method to get the minimun element of the list
+// method to get the minimun element of the list
 PyObject*
 min(PyObject* op, PyObject* Py_UNUSED(dummy));
 
-//methods to get string value of my list
+// methods to get string value of my list
 PyObject*
 repr(PyObject* op);
 
 PyObject*
 repr_line(PyObject* op);
 
-//method to check if value in List
+// method to check if value in List
 PyObject*
 contains(PyObject* op, PyObject* args);
 
-//method to check if List eq to other List
+// method to check if List eq to other List
 PyObject*
 equal(PyObject* op, PyObject* args);
+
+// method to get index of element if it is in the List
+PyObject*
+find(PyObject* op, PyObject* args);
 
 #endif

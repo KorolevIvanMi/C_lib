@@ -34,6 +34,7 @@ static PyMethodDef MyList_methods[] = {
     {"min", min,  METH_NOARGS, "List.min(): \n return the min element of the list"},
     {"contains", contains,  METH_VARARGS, "List.contains(x):\n x - AnyType value \n return True if List contains value, False otherwise"},
     {"equal", equal,  METH_VARARGS, "List.equal(x):\n x - other List \n return True if all elements of one List == all elements of other List, False otherwise"},
+    {"find", find,  METH_VARARGS, "List.index(x):\n x - AnyType value \n return position of x if List contains x, -1 otherwise"},
     {NULL}
 };
 
