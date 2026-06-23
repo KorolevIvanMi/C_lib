@@ -319,3 +319,43 @@ contains(PyObject* op, PyObject* args){
         Py_RETURN_FALSE;
     }
 }
+
+PyObject*
+equal(PyObject* op, PyObject* args){
+    MyList* self = (MyList*) op;
+    PyObject* value = NULL;
+    if(!PyArg_ParseTuple(args, "O", &value)){
+        PyErr_SetString(PyExc_TypeError, "This arguments are not suppose to bu used with this function! Or maybe you didn't send any arguments");
+        return NULL;
+    }
+    if(PyObject_TypeCheck(value, &MyListType)){
+        MyList* other = (MyList*)value;
+
+        MyList* current = self;
+        MyList* other_current = other;
+
+        if(current->value == NULL && current->next == NULL && other_current->next == NULL && other_current->value == NULL){
+            Py_RETURN_TRUE;
+        }
+        while(current!= NULL && other_current != NULL){
+            if(current->value == NULL || other_current == NULL){
+                Py_RETURN_FALSE;
+            }
+            int res = PyObject_RichCompareBool(current->value, other_current->value, Py_EQ);
+            if(res == 0){
+                Py_RETURN_FALSE;
+            }
+            current = current->next;
+            other_current = other_current->next;
+        }
+        if ((current == NULL && other_current != NULL) || (current!=NULL && other_current == NULL)){
+            Py_RETURN_FALSE;
+        }
+        Py_RETURN_TRUE;
+    }
+    else{
+        PyErr_SetString(PyExc_TypeError, "This argument is not List");
+        return NULL;
+    }
+
+}

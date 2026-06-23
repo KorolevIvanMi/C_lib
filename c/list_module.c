@@ -33,6 +33,7 @@ static PyMethodDef MyList_methods[] = {
     {"max", max,  METH_NOARGS, "List.max(): \n return the max element of the list"},
     {"min", min,  METH_NOARGS, "List.min(): \n return the min element of the list"},
     {"contains", contains,  METH_VARARGS, "List.contains(x):\n x - AnyType value \n return True if List contains value, False otherwise"},
+    {"equal", equal,  METH_VARARGS, "List.equal(x):\n x - other List \n return True if all elements of one List == all elements of other List, False otherwise"},
     {NULL}
 };
 

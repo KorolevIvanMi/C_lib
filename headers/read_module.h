@@ -45,4 +45,8 @@ repr_line(PyObject* op);
 PyObject*
 contains(PyObject* op, PyObject* args);
 
+//method to check if List eq to other List
+PyObject*
+equal(PyObject* op, PyObject* args);
+
 #endif
