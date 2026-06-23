@@ -53,4 +53,8 @@ equal(PyObject* op, PyObject* args);
 PyObject*
 find(PyObject* op, PyObject* args);
 
+// method to get how much item in the List
+PyObject*
+countIfEq(PyObject* op, PyObject* args);
+
 #endif
