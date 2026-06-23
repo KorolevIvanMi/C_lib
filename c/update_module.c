@@ -3,7 +3,8 @@
 #include <update_module.h>
 #include <list.h>
 
-static MyList* from_PyList_to_MyList(PyObject* value){
+static MyList* 
+from_PyList_to_MyList(PyObject* value){
     MyList* head = (MyList*)MyListType.tp_alloc(&MyListType, 0);
     head->value = NULL;
     head->next = NULL;

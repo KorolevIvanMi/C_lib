@@ -58,6 +58,8 @@ PyTypeObject MyListType = {
     .tp_members = MyList_members,
     .tp_methods = MyList_methods,
     .tp_as_sequence = &MyList_as_sequence,
+    .tp_repr = repr_line,
+
 };
 
 // module init

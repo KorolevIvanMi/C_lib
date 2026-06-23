@@ -33,4 +33,11 @@ max(PyObject* op, PyObject* Py_UNUSED(dummy));
 //method to get the minimun element of the list
 PyObject*
 min(PyObject* op, PyObject* Py_UNUSED(dummy));
+
+//method to get string value of my list
+PyObject*
+repr(PyObject* op);
+
+PyObject*
+repr_line(PyObject* op);
 #endif

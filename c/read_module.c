@@ -194,3 +194,79 @@ min(PyObject* op, PyObject* Py_UNUSED(dummy)){
 
     return max_value;
 }
+
+PyObject*
+repr(PyObject* op){
+        if (op == NULL) {
+        PyErr_SetString(PyExc_ValueError, "List is NULL");
+        return NULL;
+    }
+    
+    MyList* self = (MyList*) op;
+    MyList* current = self;
+    PyObject* items = PyList_New(0);
+    
+    if (items == NULL) {
+        return NULL;
+    }
+    
+    while (current != NULL) {
+        PyObject* item_str;
+        
+        if (current->value != NULL) {
+            if (PyObject_TypeCheck(current->value, &MyListType)) {
+                item_str = repr(current->value);
+            } else {
+                item_str = PyObject_Repr(current->value);
+            }
+        } else {
+            item_str = PyUnicode_FromString("NULL");
+        }
+        
+        if (item_str == NULL) {
+            Py_DECREF(items);
+            return NULL;
+        }
+        
+        if (PyList_Append(items, item_str) < 0) {
+            Py_DECREF(item_str);
+            Py_DECREF(items);
+            return NULL;
+        }
+        Py_DECREF(item_str);
+        
+        current = current->next;
+    }
+    
+    // Соединяем все элементы через ", "
+    PyObject* separator = PyUnicode_FromString(", ");
+    if (separator == NULL) {
+        Py_DECREF(items);
+        return NULL;
+    }
+    
+    PyObject* joined = PyUnicode_Join(separator, items);
+    Py_DECREF(separator);
+    Py_DECREF(items);
+    
+    if (joined == NULL) {
+        return NULL;
+    }
+    
+    // Оборачиваем в квадратные скобки
+    PyObject* result = PyUnicode_FromFormat("[%U]", joined);
+    Py_DECREF(joined);
+    
+    return result;
+}
+
+PyObject*
+repr_line(PyObject *op) {
+    PyObject* result = repr(op);
+    
+    // Добавляем новую строку
+    PyObject* with_newline = PyUnicode_FromFormat("%U\n", result);
+    Py_DECREF(result);
+    
+    return with_newline;
+}
