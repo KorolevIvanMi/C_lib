@@ -408,3 +408,47 @@ countIfEq(PyObject* op, PyObject* args){
     }
     PyLong_FromLong(count);
 }
+
+PyObject* 
+findBetw(PyObject* op, PyObject* args){
+    MyList* self = (MyList*) op;
+
+    PyObject* min_value = NULL;
+    PyObject* max_value = NULL;
+    if(!PyArg_ParseTuple(args, "OO", &min_value, &max_value)){
+        PyErr_SetString(PyExc_TypeError, "This arguments are not suppose to bu used with this function! Or maybe you didn't send any arguments");
+        return NULL;
+    }
+
+    MyList* result_list = (MyList*)MyListType.tp_alloc(&MyListType, 0);
+    result_list->value = NULL;
+    result_list->next = NULL;
+    if(self->value == NULL && self->next == NULL){
+        return (PyObject*) result_list;
+    }
+    
+    MyList* current = self;
+    MyList* res_current = result_list;
+    while(current != NULL){
+        if (current->value != NULL && current->value != Py_None){
+            if(PyObject_RichCompareBool(current->value, min_value, Py_GE) && PyObject_RichCompareBool(current->value, max_value, Py_LE)){
+                if(res_current->value == NULL && res_current->next == NULL){
+                    res_current->value = Py_NewRef(current->value);
+                }
+                else{
+                    MyList* new_node = (MyList*)MyListType.tp_alloc(&MyListType, 0);
+                    new_node->value = current->value;
+                    Py_INCREF(new_node->value);
+                    new_node->next = NULL;
+
+                    res_current->next = new_node;
+                    res_current = res_current->next;
+                }
+            }
+        }
+
+        current = current->next;
+    }
+
+    return (PyObject*) result_list;
+}

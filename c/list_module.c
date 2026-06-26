@@ -36,6 +36,7 @@ static PyMethodDef MyList_methods[] = {
     {"equal", equal,  METH_VARARGS, "List.equal(x):\n x - other List \n return True if all elements of one List == all elements of other List, False otherwise"},
     {"find", find,  METH_VARARGS, "List.index(x):\n x - AnyType value \n return position of x if List contains x, -1 otherwise"},
     {"countIfEq", countIfEq, METH_VARARGS, "List.countIfEq(x): \n x - AnyType value \n Returns the number of occurrences of an element in List"},
+    {"findBetw", findBetw, METH_VARARGS, "List.findBetw(x,y): \n x - min value \n y - max value \n Returns all elements which are in [x,y]. Works correctly only when x,y are the same type as value in List"},
     {NULL}
 };
 

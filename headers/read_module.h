@@ -57,4 +57,8 @@ find(PyObject* op, PyObject* args);
 PyObject*
 countIfEq(PyObject* op, PyObject* args);
 
+// method to find all elements in diapason
+PyObject* 
+findBetw(PyObject* op, PyObject* args);
+
 #endif
