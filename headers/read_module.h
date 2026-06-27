@@ -20,6 +20,10 @@ get(PyObject* op, PyObject* args);
 PyObject*
 get_for_seq(PyObject* op, Py_ssize_t req_pos);
 
+//method to get elements from pos x to y
+PyObject*
+getSection(PyObject* op, PyObject* args);
+
 // method to get length of the list
 PyObject*
 length(PyObject* op, PyObject *Py_UNUSED(dummy));

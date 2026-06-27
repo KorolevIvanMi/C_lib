@@ -452,3 +452,58 @@ findBetw(PyObject* op, PyObject* args){
 
     return (PyObject*) result_list;
 }
+
+PyObject*
+getSection(PyObject* op, PyObject* args){
+    MyList* self = (MyList*) op;
+    int left_index = 0;
+    int right_index = 0;
+    if(!PyArg_ParseTuple(args, "ii", &left_index, &right_index)){
+        PyErr_SetString(PyExc_TypeError, "This arguments are not suppose to bu used with this function! Or maybe you didn't send any arguments");
+        return NULL;
+    }
+    if(left_index < 0 || right_index < 0){
+        PyErr_SetString(PyExc_IndexError, "index is out of range");
+        return NULL;
+    }
+    
+    MyList* result_list = (MyList*)MyListType.tp_alloc(&MyListType, 0);
+    result_list->value = NULL;
+    result_list->next = NULL;
+
+    if(self->value == NULL && self->next == NULL){
+        return (PyObject*) result_list;
+    }
+    
+    MyList* current = self;
+    MyList* res_current = result_list;
+    int index = 0;
+    while(index < right_index){
+        if(current == NULL){
+            PyErr_SetString(PyExc_IndexError, "index is out of range");
+            return NULL;
+        }
+        if (index >= left_index && index < right_index){
+            if(res_current->value == NULL && res_current->next == NULL){
+                res_current->value = Py_NewRef(current->value);
+            }
+            else{
+                MyList* new_node = (MyList*)MyListType.tp_alloc(&MyListType, 0);
+                new_node->value = current->value;
+                Py_INCREF(new_node->value);
+                new_node->next = NULL;
+
+                res_current->next = new_node;
+                res_current = res_current->next;
+            }
+        }
+        if(index >= right_index){
+            break;
+        }
+
+        current = current->next;
+        index++;
+    }
+
+    return (PyObject*) result_list;
+}

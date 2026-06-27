@@ -24,6 +24,7 @@ static PyMethodDef MyList_methods[] = {
     {"append", append,  METH_VARARGS, "List.append(x): \n x - AnyType value \n Add element to the end of the List"},
     {"prepend", prepend, METH_VARARGS, "List.prepend(x): \n x - AnyType value \n Add element to the begginig of the List"},
     {"get", get, METH_VARARGS, "List.get(position):\n position - int value. Position of the element\n Return value on the position"},
+    {"getSec", getSection, METH_VARARGS, "List.getSec(x,y):\n x, y - left and right indexes\n Return part of the List, where index are in [x,y)"},
     {"pop", pop, METH_NOARGS, "List.pop(): \n Delete last element of the list"},
     {"popFront", popFront, METH_NOARGS, "List.popFront(): \n Delete first element of the list"},
     {"popAt", popAt, METH_VARARGS, "List.popAt(position)\n position - int value. Position of the element \n Delete element on the position"},
