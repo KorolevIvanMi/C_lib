@@ -29,6 +29,7 @@ static PyMethodDef MyList_methods[] = {
     {"popFront", popFront, METH_NOARGS, "List.popFront(): \n Delete first element of the list"},
     {"popAt", popAt, METH_VARARGS, "List.popAt(position)\n position - int value. Position of the element \n Delete element on the position"},
     {"popAfter", popAfter, METH_VARARGS, "List.popAfter(position)\n position - int value. Position of the element \n Delete element after the position"},
+    {"popBefore", popBefore, METH_VARARGS, "List.popBefore(position)\n position - int value. Position of the element \n Delete element before the position"},
     {"updateAt", updateAt, METH_VARARGS, "List.updateAt(value, position)\n value - AnyType value \n position - int value. Position of the element \n Update value of the element on the position \n WARNING: Intended for replacing single values only"},
     {"insert", insert, METH_VARARGS, "List.insert(x, position, flag)\n x - AnyType value \n position - int value \n flag - bool flag. If True - List is expanded into elements, if False - creates a nested list \n Insert value on the position"},
     {"length", length, METH_NOARGS, "List.length(): \n return amout of elements in the list"},

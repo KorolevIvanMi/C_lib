@@ -3,6 +3,21 @@
 #include <list.h>
 #include <delete_module.h>
 
+bool is_length_okey(MyList* head, int req_pos){
+    MyList* current = head;
+    int i = 0;
+    while(i != req_pos){
+        if (current == NULL){
+            return false;
+        }
+        else{
+            current=current->next;
+            i++;
+        }
+    }
+    return true;
+}
+
 
 PyObject*
 pop(PyObject* op, PyObject* Py_UNUSED(dummy)){
@@ -164,4 +179,43 @@ popAfter(PyObject* op, PyObject* args){
     }
 
     Py_RETURN_NONE;
+}
+
+PyObject*
+popBefore(PyObject* op, PyObject* args){
+    MyList* self = (MyList*) op;
+    int req_pos = 0;
+    if(!PyArg_ParseTuple(args, "i", &req_pos)){
+        PyErr_SetString(PyExc_TypeError, "This arguments are not suppose to bu used with this function! Or maybe you didn't send any arguments");
+        return NULL;
+    }
+    if(req_pos < 0){
+        PyErr_SetString(PyExc_IndexError, "index is out of range in req");
+        return NULL;
+    }
+    if(req_pos == 0){
+        Py_RETURN_NONE;
+    }
+
+    if(is_length_okey(self, req_pos)){
+        int i = 0;
+        MyList* current = self->next;
+        while (i < req_pos-1){
+            MyList* temp = current;
+            current = current->next;
+            Py_XDECREF(temp->value);
+            Py_TYPE(temp) -> tp_free(temp);
+            i++;
+        }
+        self->value = current->value;
+        self->next = current->next;
+        current->value = NULL;
+        Py_TYPE(current) -> tp_free(current);
+        Py_RETURN_NONE;
+    }
+    else{
+        PyErr_SetString(PyExc_IndexError, "index is out of range");
+        return NULL;
+    }
+    
 }

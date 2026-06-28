@@ -19,5 +19,7 @@ PyObject*
 popAfter(PyObject* op, PyObject* args);
 
 // delete all elements before position
+PyObject*
+popBefore(PyObject* op, PyObject* args);
 
 #endif
