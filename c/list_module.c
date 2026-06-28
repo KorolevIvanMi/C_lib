@@ -45,6 +45,7 @@ static PySequenceMethods MyList_as_sequence = {
     .sq_length = length_for_seq,
     .sq_item = get_for_seq,
     .sq_ass_item = updateAt_for_seq,
+    .sq_concat = concat,
 };
 
 // data type descriptions for MyList with the purpose of various functions

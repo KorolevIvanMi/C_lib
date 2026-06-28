@@ -20,6 +20,8 @@ prepend(PyObject* op, PyObject* args);
 PyObject*
 insert(PyObject* op, PyObject* args);
 
-
+//method to concat to Lists
+PyObject*
+concat(PyObject* o1, PyObject* o2);
 
 #endif

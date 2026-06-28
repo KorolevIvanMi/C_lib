@@ -544,3 +544,67 @@ insert(PyObject* op, PyObject* args){
     Py_RETURN_NONE;
 }
 
+PyObject*
+concat(PyObject* o1, PyObject* o2){
+    if (!PyObject_TypeCheck(o1, &MyListType) || !PyObject_TypeCheck(o2, &MyListType)) {
+        PyErr_BadArgument();
+        return NULL;
+    }
+    MyList *self1 = (MyList*)o1;
+    MyList *self2 = (MyList*)o2;
+    MyList *result, *current = NULL;
+
+    result = (MyList*)MyListType.tp_alloc(&MyListType, 0);
+    result->value = NULL;
+    result->next = NULL;
+
+    
+    //копируем первый элемент
+    current = result;
+    MyList* src = self1;
+    
+    while(src != NULL&&src->value != NULL){
+        if(current->value == NULL && current->next == NULL){
+            current->value = src->value;
+            Py_XINCREF(current->value);
+            src = src->next;
+        }
+        else{
+            MyList* new_node = (MyList*)MyListType.tp_alloc(&MyListType, 0);
+            new_node->value = src->value;
+            Py_XINCREF(new_node->value);
+            new_node->next = NULL;
+
+            current->next = new_node;
+            current = current->next;
+
+            src = src->next;
+        }
+    }
+
+    //копируем второй элемент
+    src = self2;
+    while(src !=NULL&&src->value != NULL){
+        if(current->value == NULL && current->next == NULL){
+            current->value = src->value;
+            Py_XINCREF(current->value);
+            src = src->next;
+        }
+        else{
+            MyList* new_node = (MyList*)MyListType.tp_alloc(&MyListType, 0);
+            new_node->value = src->value;
+            Py_XINCREF(new_node->value);
+            new_node->next = NULL;
+
+            current->next = new_node;
+            current = current->next;
+
+            src = src->next;
+        }
+        
+    }
+
+    return (PyObject*)result;
+
+    
+}
