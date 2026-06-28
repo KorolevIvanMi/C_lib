@@ -217,5 +217,76 @@ popBefore(PyObject* op, PyObject* args){
         PyErr_SetString(PyExc_IndexError, "index is out of range");
         return NULL;
     }
-    
+}
+
+PyObject*
+clear(PyObject* op, PyObject* Py_UNUSED(dummy)){
+    MyList* self = (MyList*)op;
+    if(self->value == NULL && self->next == NULL){
+        Py_RETURN_NONE;
+    }
+    if(self->next == NULL){
+        self->value = NULL;
+        Py_RETURN_NONE;
+    }
+    self->value = NULL;
+    Py_XDECREF(self->value);
+    MyList* current = self->next;
+    self->next = NULL;
+    while(current != NULL){
+        MyList* temp = current;
+        current=current->next;
+        Py_XDECREF(temp->value);
+        Py_TYPE(temp) -> tp_free(temp);
+    }
+    Py_RETURN_NONE;
+}
+
+PyObject*
+popSection(PyObject* op, PyObject* args){
+    MyList* self = (MyList*) op;
+    int left_index = 0;
+    int right_index = 0;
+    if(!PyArg_ParseTuple(args, "ii", &left_index, &right_index)){
+        PyErr_SetString(PyExc_TypeError, "This arguments are not suppose to bu used with this function! Or maybe you didn't send any arguments");
+        return NULL;
+    }
+    if(left_index < 0 || right_index < 0){
+        PyErr_SetString(PyExc_IndexError, "index is out of range");
+        return NULL;
+    }
+    if(left_index > right_index){
+        PyErr_SetString(PyExc_IndexError, "left index can not be bigger than right");
+        return NULL;
+    }
+
+    MyList* left_part = self;
+    int i = 0;
+    while(i < left_index){
+        if(left_part == NULL){
+            PyErr_SetString(PyExc_IndexError, "index is out of range");
+            return NULL;
+        }
+        i++;
+        left_part = left_part->next;
+    }
+    if(left_part == NULL){
+        PyErr_SetString(PyExc_IndexError, "index is out of range");
+        return NULL;
+    }
+    MyList* right_part = left_part->next;
+    while (i < right_index-1){
+        if(right_part == NULL){
+            PyErr_SetString(PyExc_IndexError, "index is out of range");
+            return NULL;
+        }
+        MyList* temp = right_part;
+        right_part = right_part->next;
+        Py_XDECREF(temp->value);
+        Py_TYPE(temp) -> tp_free(temp);
+        i++;
+    }
+    left_part->next = NULL;
+    left_part->next = right_part;
+    Py_RETURN_NONE;
 }

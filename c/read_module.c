@@ -466,6 +466,10 @@ getSection(PyObject* op, PyObject* args){
         PyErr_SetString(PyExc_IndexError, "index is out of range");
         return NULL;
     }
+    if(left_index > right_index){
+        PyErr_SetString(PyExc_IndexError, "left index can not be bigger than right");
+        return NULL;
+    }
     
     MyList* result_list = (MyList*)MyListType.tp_alloc(&MyListType, 0);
     result_list->value = NULL;

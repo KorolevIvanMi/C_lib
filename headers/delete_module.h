@@ -22,4 +22,12 @@ popAfter(PyObject* op, PyObject* args);
 PyObject*
 popBefore(PyObject* op, PyObject* args);
 
+// delete all elements from your list
+PyObject*
+clear(PyObject* op, PyObject* Py_UNUSED(dummy));
+
+// delete all elements from index1 to index2
+PyObject*
+popSection(PyObject* op, PyObject* args);
+
 #endif
