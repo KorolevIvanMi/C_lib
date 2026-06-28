@@ -16,12 +16,16 @@ append(PyObject* op, PyObject* args);
 PyObject*
 prepend(PyObject* op, PyObject* args); 
 
-//method to build on list into another
+// method to build on list into another
 PyObject*
 insert(PyObject* op, PyObject* args);
 
-//method to concat to Lists
+// method to concat to Lists
 PyObject*
 concat(PyObject* o1, PyObject* o2);
+
+// method which return the copy of the list
+PyObject*
+copy(PyObject* op, PyObject *Py_UNUSED(dummy));
 
 #endif

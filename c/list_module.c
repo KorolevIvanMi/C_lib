@@ -42,6 +42,7 @@ static PyMethodDef MyList_methods[] = {
     {"find", find,  METH_VARARGS, "List.index(x):\n x - AnyType value \n return position of x if List contains x, -1 otherwise"},
     {"countIfEq", countIfEq, METH_VARARGS, "List.countIfEq(x): \n x - AnyType value \n Returns the number of occurrences of an element in List"},
     {"findBetw", findBetw, METH_VARARGS, "List.findBetw(x,y): \n x - min value \n y - max value \n Returns all elements which are in [x,y]. Works correctly only when x,y are the same type as value in List"},
+    {"copy", copy, METH_NOARGS, "List.copy(): \n Return copy of the list"},
     {NULL}
 };
 

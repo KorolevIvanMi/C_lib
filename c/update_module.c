@@ -606,3 +606,38 @@ concat(PyObject* o1, PyObject* o2){
 
     return (PyObject*)result;
 }
+
+PyObject*
+copy(PyObject* op, PyObject *Py_UNUSED(dummy)){
+    MyList* self = (MyList*)op;
+    if(self->value == NULL && self->next == NULL){
+        MyList* node = (MyList*)MyListType.tp_alloc(&MyListType, 0);
+        node->next = NULL;
+        node->value = NULL;
+        return (PyObject*) node;
+    }
+    MyList* result = (MyList*)MyListType.tp_alloc(&MyListType, 0);
+    result->value = NULL;
+    result->next = NULL;
+
+    MyList* current_self = self;
+    MyList* current_result = result;
+    while(current_self != NULL){
+        if (PyObject_TypeCheck(current_self->value, &MyListType)){
+            current_result->value = (PyObject*)copy(current_self->value, NULL);
+        }
+        else{
+            current_result->value = Py_NewRef(current_self->value);
+        }
+
+        if(current_self->next != NULL){
+            MyList* node = (MyList*)MyListType.tp_alloc(&MyListType, 0);
+            node->next = NULL;
+            node->value = NULL;
+            current_result->next= node;
+            current_result = current_result->next;
+        }
+        current_self = current_self->next;
+    }
+    return (PyObject*) result;
+}
