@@ -79,7 +79,8 @@ Custom_init(PyObject* op, PyObject* args, PyObject* kwds){
                 current = new_node;
             }
         }
-    }else if (PyIter_Check(value)){
+    }
+    else if (PyIter_Check(value)){
         PyObject* item;
         MyList* current =self;
         int first = 1;
@@ -96,15 +97,11 @@ Custom_init(PyObject* op, PyObject* args, PyObject* kwds){
                 current->next = new_node;
                 current = new_node;
             }
-            Py_DECREF(item);  // PyIter_Next возвращает новую ссылку
+            Py_DECREF(item); 
         }
-        
-        // Проверяем, была ли ошибка в итераторе
         if (PyErr_Occurred()) {
             return -1;
         }
-        
-        // Если ни одного элемента не было
         if (first) {
             self->value = NULL;
             self->next = NULL;

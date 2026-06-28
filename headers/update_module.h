@@ -28,4 +28,7 @@ concat(PyObject* o1, PyObject* o2);
 PyObject*
 copy(PyObject* op, PyObject *Py_UNUSED(dummy));
 
+// method to sort list
+PyObject*
+sort(PyObject* op, PyObject* args);
 #endif
