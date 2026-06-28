@@ -79,6 +79,36 @@ Custom_init(PyObject* op, PyObject* args, PyObject* kwds){
                 current = new_node;
             }
         }
+    }else if (PyIter_Check(value)){
+        PyObject* item;
+        MyList* current =self;
+        int first = 1;
+    
+        while ((item = PyIter_Next(value)) != NULL) {
+            if (first) {
+                current->value = create_mylist_from_object(item);
+                current->next = NULL;
+                first = 0;
+            } else {
+                MyList* new_node = (MyList*)MyListType.tp_alloc(&MyListType, 0);
+                new_node->value = create_mylist_from_object(item);
+                new_node->next = NULL;
+                current->next = new_node;
+                current = new_node;
+            }
+            Py_DECREF(item);  // PyIter_Next возвращает новую ссылку
+        }
+        
+        // Проверяем, была ли ошибка в итераторе
+        if (PyErr_Occurred()) {
+            return -1;
+        }
+        
+        // Если ни одного элемента не было
+        if (first) {
+            self->value = NULL;
+            self->next = NULL;
+        }
     }
     else if (PyObject_TypeCheck(value, &MyListType)){
         MyList* src = (MyList*) value;

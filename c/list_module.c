@@ -60,7 +60,8 @@ PyTypeObject MyListType = {
     .tp_doc = PyDoc_STR("My list\n\n"
                     "List() -> new empty list\n"
                     "List(iterable) -> new list initialized from iterable's items\n"
-                    "List(value) -> new list with single element"),
+                    "List(value) -> new list with single element\n"
+                    "List(generator) -> new list"),
     .tp_basicsize = sizeof(MyList),
     .tp_itemsize = 0,
     .tp_flags = Py_TPFLAGS_DEFAULT | Py_TPFLAGS_BASETYPE,
