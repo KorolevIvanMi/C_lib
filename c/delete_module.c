@@ -123,7 +123,7 @@ popAt(PyObject* op, PyObject* args){
 }
 
 PyObject*
-popFrom(PyObject* op, PyObject* args){
+popAfter(PyObject* op, PyObject* args){
     MyList* self = (MyList*) op;
     int req_pos = 0;
     if(!PyArg_ParseTuple(args, "i", &req_pos)){
