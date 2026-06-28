@@ -482,12 +482,12 @@ getSection(PyObject* op, PyObject* args){
     MyList* current = self;
     MyList* res_current = result_list;
     int index = 0;
-    while(index < right_index){
+    while(index <= right_index){
         if(current == NULL){
             PyErr_SetString(PyExc_IndexError, "index is out of range");
             return NULL;
         }
-        if (index >= left_index && index < right_index){
+        if (index >= left_index && index <= right_index){
             if(res_current->value == NULL && res_current->next == NULL){
                 res_current->value = Py_NewRef(current->value);
             }
@@ -501,7 +501,7 @@ getSection(PyObject* op, PyObject* args){
                 res_current = res_current->next;
             }
         }
-        if(index >= right_index){
+        if(index > right_index){
             break;
         }
 
