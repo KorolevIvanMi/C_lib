@@ -11,7 +11,6 @@ show(PyObject *op, PyObject *Py_UNUSED(dummy));
 PyObject*
 show_line(PyObject *op, PyObject *Py_UNUSED(dummy));
 
-
 // method of taking an element by index
 PyObject*
 get(PyObject* op, PyObject* args);

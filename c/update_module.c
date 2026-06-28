@@ -605,6 +605,4 @@ concat(PyObject* o1, PyObject* o2){
     }
 
     return (PyObject*)result;
-
-    
 }

@@ -120,5 +120,48 @@ popAt(PyObject* op, PyObject* args){
         };
     }
     Py_RETURN_NONE;
-    
+}
+
+PyObject*
+popFrom(PyObject* op, PyObject* args){
+    MyList* self = (MyList*) op;
+    int req_pos = 0;
+    if(!PyArg_ParseTuple(args, "i", &req_pos)){
+        PyErr_SetString(PyExc_TypeError, "This arguments are not suppose to bu used with this function! Or maybe you didn't send any arguments");
+        return NULL;
+    }
+    if(req_pos < 0){
+        PyErr_SetString(PyExc_IndexError, "index is out of range");
+        return NULL;
+    }
+
+    MyList* current = self; 
+
+    int i = 0;
+    while(i != req_pos && current!=NULL){
+        if(current == NULL){
+            PyErr_SetString(PyExc_IndexError, "index is out of range");
+            return NULL;
+        }
+        current = current->next;
+        i++;
+    }
+    if(current == NULL){
+        PyErr_SetString(PyExc_IndexError, "index is out of range");
+        return NULL;
+    }
+
+    if(current->next == NULL){
+        Py_RETURN_NONE;
+    }
+    MyList* src = current->next;
+    current->next = NULL;
+    while (src != NULL){
+        MyList* temp = src;
+        src=src->next;
+        Py_XDECREF(temp->value);
+        Py_TYPE(temp) -> tp_free(temp);
+    }
+
+    Py_RETURN_NONE;
 }

@@ -12,4 +12,7 @@ popFront(PyObject* op, PyObject* Py_UNUSED(dummy));
 
 PyObject*
 popAt(PyObject* op, PyObject* args);
+
+PyObject*
+popFrom(PyObject* op, PyObject* args);
 #endif
