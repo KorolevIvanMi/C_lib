@@ -31,4 +31,9 @@ copy(PyObject* op, PyObject *Py_UNUSED(dummy));
 // method to sort list
 PyObject*
 sort(PyObject* op, PyObject* args);
+
+// method to replace with slices
+int 
+replace_for_map(PyObject* op, PyObject* key, PyObject* value);
+
 #endif

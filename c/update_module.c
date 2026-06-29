@@ -3,6 +3,18 @@
 #include <update_module.h>
 #include <list.h>
 
+static Py_ssize_t
+get_length(MyList* head) {
+    Py_ssize_t len = 0;
+    MyList* current = head;
+    while (current != NULL && current->value != NULL) {
+        len++;
+        current = current->next;
+    }
+    return len;
+}
+
+
 static MyList* 
 from_PyList_to_MyList(PyObject* value){
     MyList* head = (MyList*)MyListType.tp_alloc(&MyListType, 0);
@@ -119,10 +131,6 @@ updateAt_for_seq(PyObject* op,  Py_ssize_t pos, PyObject* value){
     }
     
     MyList* self = (MyList*) op;
-    // if(pos < 0){
-    //     PyErr_SetString(PyExc_IndexError, "index is out of range");
-    //     return -1;
-    // }
 
     int i = 0;
     MyList* current = self;
@@ -640,4 +648,81 @@ copy(PyObject* op, PyObject *Py_UNUSED(dummy)){
         current_self = current_self->next;
     }
     return (PyObject*) result;
+}
+
+int replace_for_map(PyObject* op, PyObject* key, PyObject* value) {
+    MyList* self = (MyList*)op;
+    
+    // Обработка индекса (замена одного элемента)
+    if (PyLong_Check(key)) {
+        Py_ssize_t idx = PyLong_AsSsize_t(key);
+        if (PyErr_Occurred()) {
+            return -1;
+        }
+        
+        MyList* current = self;
+        Py_ssize_t i = 0;
+        while (i < idx && current != NULL) {
+            current = current->next;
+            i++;
+        }
+        
+        if (current == NULL) {
+            PyErr_SetString(PyExc_IndexError, "index out of range");
+            return -1;
+        }
+        
+        // Для индекса value может быть любым объектом
+        Py_XSETREF(current->value, Py_NewRef(value));
+        return 0;
+    }
+    
+    // Обработка среза
+    if (PySlice_Check(key)) {
+        // Проверяем, что value - это MyList (только для срезов)
+        if (!PyObject_TypeCheck(value, &MyListType)) {
+            PyErr_SetString(PyExc_TypeError, "can only assign MyList to slice");
+            return -1;
+        }
+        
+        Py_ssize_t length = get_length(self);
+        Py_ssize_t start, stop, step, slicelength;
+        
+        if (PySlice_GetIndicesEx(key, length, &start, &stop, &step, &slicelength) < 0) {
+            return -1;
+        }
+        
+        if (step != 1) {
+            PyErr_SetString(PyExc_ValueError, "extended slice assignment not supported");
+            return -1;
+        }
+        
+        MyList* src = (MyList*)value;
+        Py_ssize_t src_len = get_length(src);
+        
+        if (slicelength != src_len) {
+            PyErr_SetString(PyExc_ValueError, "Icorrect size of operands");
+            return -1;
+        }
+        
+        // Идем параллельно по двум спискам
+        MyList* dest = self;
+        Py_ssize_t i = 0;
+        while (i < start && dest != NULL) {
+            dest = dest->next;
+            i++;
+        }
+        
+        MyList* src_current = src;
+        while (dest != NULL && src_current != NULL && src_current->value != NULL) {
+            Py_XSETREF(dest->value, Py_NewRef(src_current->value));
+            dest = dest->next;
+            src_current = src_current->next;
+        }
+        
+        return 0;
+    }
+    
+    PyErr_SetString(PyExc_TypeError, "indices must be integers or slices");
+    return -1;
 }

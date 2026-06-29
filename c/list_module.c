@@ -57,6 +57,7 @@ static PySequenceMethods MyList_as_sequence = {
 static PyMappingMethods MyList_as_map = {
     .mp_length =  length_for_seq,
     .mp_subscript = get_slice,
+    .mp_ass_subscript = replace_for_map,
 };
 
 // data type descriptions for MyList with the purpose of various functions
