@@ -753,3 +753,31 @@ repeat_for_seq(PyObject* op, Py_ssize_t count){
     }
     return (PyObject*) result;
 }
+
+PyObject* 
+reverse(PyObject* op, PyObject *Py_UNUSED(dummy)){
+    MyList* self = (MyList*) op;
+
+    
+    if(self== NULL || (self->next == NULL && self->value == NULL)){
+        PyErr_SetString(PyExc_ValueError, "List is NULL");
+        return NULL;
+    }
+    MyList* current = self;
+    MyList* result = (MyList*)MyListType.tp_alloc(&MyListType, 0);
+    result->value = NULL;
+    result->next = NULL;
+    while(current != NULL){
+        MyList* node = (MyList*)MyListType.tp_alloc(&MyListType, 0);
+        node->value = current->value;
+        Py_INCREF(node->value);
+        node->next = result->next;
+        result->next = node;
+        current= current->next;
+    }
+    MyList* tmp = result;
+    result = result->next;
+    Py_TYPE(tmp) -> tp_free(tmp);
+
+    return (PyObject*)result;
+} 

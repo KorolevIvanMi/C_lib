@@ -28,10 +28,6 @@ concat(PyObject* o1, PyObject* o2);
 PyObject*
 copy(PyObject* op, PyObject *Py_UNUSED(dummy));
 
-// method to sort list
-PyObject*
-sort(PyObject* op, PyObject* args);
-
 // method to replace with slices
 int 
 replace_for_map(PyObject* op, PyObject* key, PyObject* value);
@@ -39,4 +35,8 @@ replace_for_map(PyObject* op, PyObject* key, PyObject* value);
 // method to mult list
 PyObject*
 repeat_for_seq(PyObject* op, Py_ssize_t count);
+
+// method to return reverse copy list
+PyObject* 
+reverse(PyObject* op, PyObject *Py_UNUSED(dummy));
 #endif
