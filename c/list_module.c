@@ -54,6 +54,11 @@ static PySequenceMethods MyList_as_sequence = {
     .sq_concat = concat,
 };
 
+static PyMappingMethods MyList_as_map = {
+    .mp_length =  length_for_seq,
+    .mp_subscript = get_slice,
+};
+
 // data type descriptions for MyList with the purpose of various functions
 PyTypeObject MyListType = {
     .ob_base = PyVarObject_HEAD_INIT(NULL, 0)
@@ -73,7 +78,7 @@ PyTypeObject MyListType = {
     .tp_methods = MyList_methods,
     .tp_as_sequence = &MyList_as_sequence,
     .tp_repr = repr_line,
-
+    .tp_as_mapping = &MyList_as_map,
 };
 
 // module init

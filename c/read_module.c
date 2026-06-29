@@ -92,10 +92,6 @@ get(PyObject* op, PyObject* args){
 PyObject*
 get_for_seq(PyObject* op, Py_ssize_t req_pos){
     MyList* self = (MyList*) op;
-    // if (req_pos < 0){
-    //     PyErr_SetString(PyExc_IndexError, "index is out of range");
-    //     return NULL;
-    // }
     int i = 0;
     if(self->value == NULL) {
         Py_RETURN_NONE;
@@ -529,4 +525,47 @@ get_size(PyObject* op, PyObject* Py_UNUSED(dummy)){
     }
     
     return PyLong_FromLong(total);
+}
+
+PyObject*
+get_slice(PyObject* op, PyObject* key){
+    if (PySlice_Check(key)) {
+        MyList* self = (MyList*) op;
+
+        Py_ssize_t length = length_for_seq(op);
+        Py_ssize_t start, stop, step, slicelength;
+        if (PySlice_GetIndicesEx(key, length, &start, &stop, &step, &slicelength) < 0) {
+            return NULL;
+        }
+        MyList* result = (MyList*)MyListType.tp_alloc(&MyListType, 0);
+        result->value = NULL;
+        result->next = NULL;
+        MyList* current_result = result;
+        for (Py_ssize_t i = 0; i < slicelength; i++){
+            Py_ssize_t idx = start + i * step;
+            if(current_result->value == NULL && current_result->next == NULL){
+                current_result->value = get_for_seq(op,idx);
+                Py_INCREF(result->value);
+            }
+            else{
+                MyList* node = (MyList*)MyListType.tp_alloc(&MyListType, 0);
+                node->value = get_for_seq(op,idx);
+                node->next = NULL;
+                current_result->next = node;
+                current_result = current_result->next;
+                Py_INCREF(current_result->value); 
+            }
+        }
+        return (PyObject*)result;
+    }
+    else if (PyLong_Check(key)) {
+        Py_ssize_t idx = PyLong_AsSsize_t(key);
+        PyObject* item = get_for_seq(op, idx);
+        Py_INCREF(item);
+        return item;
+    }
+    else{
+        PyErr_SetString(PyExc_TypeError, "indices must be integers or slices");
+        return NULL;
+    }
 }

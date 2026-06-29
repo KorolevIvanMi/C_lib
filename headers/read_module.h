@@ -67,4 +67,8 @@ findBetw(PyObject* op, PyObject* args);
 // method to get correct memory usage
 PyObject*
 get_size(PyObject* op, PyObject* Py_UNUSED(dummy));
+
+//method to get slice
+PyObject*
+get_slice(PyObject* op, PyObject* key);
 #endif
