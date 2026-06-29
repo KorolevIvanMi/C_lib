@@ -43,6 +43,7 @@ static PyMethodDef MyList_methods[] = {
     {"countIfEq", countIfEq, METH_VARARGS, "List.countIfEq(x): \n x - AnyType value \n Returns the number of occurrences of an element in List"},
     {"findBetw", findBetw, METH_VARARGS, "List.findBetw(x,y): \n x - min value \n y - max value \n Returns all elements which are in [x,y]. Works correctly only when x,y are the same type as value in List"},
     {"copy", copy, METH_NOARGS, "List.copy(): \n Return copy of the list"},
+    {"getSize", get_size, METH_NOARGS, "List.getSize(): \n Return memory usage in bytes"},
     {NULL}
 };
 

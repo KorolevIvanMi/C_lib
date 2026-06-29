@@ -64,4 +64,7 @@ countIfEq(PyObject* op, PyObject* args);
 PyObject* 
 findBetw(PyObject* op, PyObject* args);
 
+// method to get correct memory usage
+PyObject*
+get_size(PyObject* op, PyObject* Py_UNUSED(dummy));
 #endif

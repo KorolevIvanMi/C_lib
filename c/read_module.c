@@ -511,3 +511,22 @@ getSection(PyObject* op, PyObject* args){
 
     return (PyObject*) result_list;
 }
+
+PyObject*
+get_size(PyObject* op, PyObject* Py_UNUSED(dummy)){
+    MyList* self = (MyList*) op;
+    int total = 0;
+
+    MyList* current = self;
+    
+    while (current != NULL) {
+        total += sizeof(MyList);
+        if (current->value != NULL) {
+            total += sizeof(PyObject);
+        }
+        
+        current = current->next;
+    }
+    
+    return PyLong_FromLong(total);
+}
