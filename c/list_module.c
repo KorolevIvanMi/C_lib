@@ -45,7 +45,7 @@ static PyMethodDef MyList_methods[] = {
     {"copy", copy, METH_NOARGS, "List.copy(): \n Return copy of the list"},
     {"getSize", get_size, METH_NOARGS, "List.getSize(): \n Return memory usage in bytes"},
     {"reverse", reverse, METH_NOARGS, "List.reverse(): \n Return reversed copy of array"},
-    {"sort", sort, METH_VARARGS, "List.reverse(): \n Return reversed copy of array"},
+    {"sort", sort, METH_VARARGS, "List.sort(reverse = 0): \n reverse = int or bool value. if true sort from big to small, from small to big else \n Return sorted copy of the List"},
     {NULL}
 };
 
