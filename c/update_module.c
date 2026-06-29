@@ -773,7 +773,7 @@ reverse(PyObject* op, PyObject *Py_UNUSED(dummy)){
         Py_INCREF(node->value);
         node->next = result->next;
         result->next = node;
-        current= current->next;
+        current = current->next;
     }
     MyList* tmp = result;
     result = result->next;
@@ -781,3 +781,79 @@ reverse(PyObject* op, PyObject *Py_UNUSED(dummy)){
 
     return (PyObject*)result;
 } 
+
+
+PyObject*
+sort(PyObject* op, PyObject* args){
+    MyList* self = (MyList*)op;
+    int reverse = 0;
+    if(!PyArg_ParseTuple(args, "|i", &reverse)){
+        PyErr_SetString(PyExc_TypeError, "Invalid arguments for sort()");
+        return NULL;
+    }
+    
+    // Пустой список
+    if (self == NULL || self->value == NULL) {
+        MyList* empty = (MyList*)MyListType.tp_alloc(&MyListType, 0);
+        if (!empty) return NULL;
+        empty->value = NULL;
+        empty->next = NULL;
+        return (PyObject*)empty;
+    }
+    
+    MyList* result = (MyList*)MyListType.tp_alloc(&MyListType, 0);
+    if (!result) return NULL;
+    result->value = Py_NewRef(self->value);
+    result->next = NULL;
+
+    MyList* current = self->next;
+    
+    while(current != NULL && current->value != NULL){
+        MyList* node = (MyList*)MyListType.tp_alloc(&MyListType, 0);
+        node->value = Py_NewRef(current->value);
+        node->next = NULL;
+        
+        MyList* current_result = result;
+        MyList* prev = NULL;
+        int inserted = 0;
+        while(current_result != NULL){
+            int cmp;
+            if (reverse == 0) {
+                cmp = PyObject_RichCompareBool(current_result->value, node->value, Py_GT);
+            } else {
+                cmp = PyObject_RichCompareBool(current_result->value, node->value, Py_LT);
+            }
+            
+            if (cmp == -1) {
+                Py_DECREF(node);
+                Py_DECREF(result);
+                return NULL;
+            }
+            
+            if (cmp) {
+                if (prev == NULL) {
+                    node->next = result;
+                    result = node;
+                } else {
+                    node->next = current_result;
+                    prev->next = node;
+                }
+                inserted = 1;
+                break;
+            }
+            
+            prev = current_result;
+            current_result = current_result->next;
+        }
+        if (!inserted) {
+            if (prev != NULL) {
+                prev->next = node;
+            } else {
+                result = node;
+            }
+        }
+        current = current->next;
+    }
+    
+    return (PyObject*)result;
+}

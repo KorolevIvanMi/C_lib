@@ -44,7 +44,8 @@ static PyMethodDef MyList_methods[] = {
     {"findBetw", findBetw, METH_VARARGS, "List.findBetw(x,y): \n x - min value \n y - max value \n Returns all elements which are in [x,y]. Works correctly only when x,y are the same type as value in List"},
     {"copy", copy, METH_NOARGS, "List.copy(): \n Return copy of the list"},
     {"getSize", get_size, METH_NOARGS, "List.getSize(): \n Return memory usage in bytes"},
-    {"reverse", reverse, METH_NOARGS, "List.getSize(): \n Return memory usage in bytes"},
+    {"reverse", reverse, METH_NOARGS, "List.reverse(): \n Return reversed copy of array"},
+    {"sort", sort, METH_VARARGS, "List.reverse(): \n Return reversed copy of array"},
     {NULL}
 };
 

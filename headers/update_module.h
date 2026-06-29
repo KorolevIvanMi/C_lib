@@ -39,4 +39,8 @@ repeat_for_seq(PyObject* op, Py_ssize_t count);
 // method to return reverse copy list
 PyObject* 
 reverse(PyObject* op, PyObject *Py_UNUSED(dummy));
+
+// method to get sorted copy of array
+PyObject*
+sort(PyObject* op, PyObject* args);
 #endif
