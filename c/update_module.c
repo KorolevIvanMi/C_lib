@@ -791,8 +791,6 @@ sort(PyObject* op, PyObject* args){
         PyErr_SetString(PyExc_TypeError, "Invalid arguments for sort()");
         return NULL;
     }
-    
-    // Пустой список
     if (self == NULL || self->value == NULL) {
         MyList* empty = (MyList*)MyListType.tp_alloc(&MyListType, 0);
         if (!empty) return NULL;
