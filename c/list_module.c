@@ -52,6 +52,7 @@ static PySequenceMethods MyList_as_sequence = {
     .sq_item = get_for_seq,
     .sq_ass_item = updateAt_for_seq,
     .sq_concat = concat,
+    .sq_repeat = repeat_for_seq,
 };
 
 static PyMappingMethods MyList_as_map = {

@@ -14,7 +14,6 @@ get_length(MyList* head) {
     return len;
 }
 
-
 static MyList* 
 from_PyList_to_MyList(PyObject* value){
     MyList* head = (MyList*)MyListType.tp_alloc(&MyListType, 0);
@@ -71,7 +70,6 @@ copy_my_list(MyList* src) {
     return head;
 }
 
-// Вспомогательная функция: найти последний элемент
 static MyList*
 get_last(MyList* head) {
     if (!head) return NULL;
@@ -650,7 +648,8 @@ copy(PyObject* op, PyObject *Py_UNUSED(dummy)){
     return (PyObject*) result;
 }
 
-int replace_for_map(PyObject* op, PyObject* key, PyObject* value) {
+int
+replace_for_map(PyObject* op, PyObject* key, PyObject* value) {
     MyList* self = (MyList*)op;
     
     // Обработка индекса (замена одного элемента)
@@ -672,14 +671,13 @@ int replace_for_map(PyObject* op, PyObject* key, PyObject* value) {
             return -1;
         }
         
-        // Для индекса value может быть любым объектом
+        
         Py_XSETREF(current->value, Py_NewRef(value));
         return 0;
     }
     
-    // Обработка среза
+    
     if (PySlice_Check(key)) {
-        // Проверяем, что value - это MyList (только для срезов)
         if (!PyObject_TypeCheck(value, &MyListType)) {
             PyErr_SetString(PyExc_TypeError, "can only assign MyList to slice");
             return -1;
@@ -705,7 +703,6 @@ int replace_for_map(PyObject* op, PyObject* key, PyObject* value) {
             return -1;
         }
         
-        // Идем параллельно по двум спискам
         MyList* dest = self;
         Py_ssize_t i = 0;
         while (i < start && dest != NULL) {
@@ -725,4 +722,34 @@ int replace_for_map(PyObject* op, PyObject* key, PyObject* value) {
     
     PyErr_SetString(PyExc_TypeError, "indices must be integers or slices");
     return -1;
+}
+
+PyObject*
+repeat_for_seq(PyObject* op, Py_ssize_t count){
+    MyList* self = (MyList*) op;
+    if(count <= 0){
+        PyErr_SetString(PyExc_ValueError, "mult coef can not be cmaller than 1");
+        return NULL;
+    }
+
+    MyList* result = (MyList*)MyListType.tp_alloc(&MyListType, 0);
+    result->value = NULL;
+    result->next = NULL;
+
+    MyList* result_current = result;
+    
+    for(int i = 0; i < count; i++){
+        if(i == 0){
+            result_current->value = self->value;
+            Py_INCREF(result_current->value);
+        }
+        else{
+            MyList* node = (MyList*)MyListType.tp_alloc(&MyListType, 0);
+            node->value = self->value;
+            Py_INCREF(node->value);
+            result_current->next = node;
+            result_current= result_current->next;
+        }
+    }
+    return (PyObject*) result;
 }

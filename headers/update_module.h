@@ -36,4 +36,7 @@ sort(PyObject* op, PyObject* args);
 int 
 replace_for_map(PyObject* op, PyObject* key, PyObject* value);
 
+// method to mult list
+PyObject*
+repeat_for_seq(PyObject* op, Py_ssize_t count);
 #endif
