@@ -1,6 +1,6 @@
 CC = gcc
 CFLAGS = -shared -O2 -fPIC
-PYTHON_INC = -I/usr/include/python3.14
+PYTHON_INC = $(shell python3-config --includes 2>/dev/null || echo "-I/usr/include/python3.14")
 INC = -I./headers
 TARGET = build/mylist.so
 
