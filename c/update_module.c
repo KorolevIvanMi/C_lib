@@ -16,30 +16,47 @@ get_length(MyList* head) {
 
 static MyList* 
 from_PyList_to_MyList(PyObject* value){
+    if (!PyList_Check(value)) {
+        PyErr_SetString(PyExc_TypeError, "Expected list");
+        return NULL;
+    }
+    
     MyList* head = (MyList*)MyListType.tp_alloc(&MyListType, 0);
+    if (!head) return NULL;
+    
     head->value = NULL;
     head->next = NULL;
 
-
-    int length = PyList_GET_SIZE(value);
+    Py_ssize_t length = PyList_Size(value);  // используем PyList_Size()
     if (length == 0){
         return head;
     }
-    else{
-        MyList* current = head;
-        current->value = PyList_GetItem(value, 0);
-        Py_INCREF(current->value);
-        for(int i = 1; i < length; i++){
+    
+    MyList* current = head;
+    for(Py_ssize_t i = 0; i < length; i++){
+        PyObject* item = PyList_GetItem(value, i);
+        if (!item) {
+            // Очистка при ошибке
+            Py_TYPE(head)->tp_free(head);
+            return NULL;
+        }
+        
+        if (i == 0) {
+            current->value = Py_NewRef(item);
+        } else {
             MyList* new_element = (MyList*)MyListType.tp_alloc(&MyListType, 0);
+            if (!new_element) {
+                // Очистка
+                Py_TYPE(head)->tp_free(head);
+                return NULL;
+            }
+            new_element->value = Py_NewRef(item);
             new_element->next = NULL;
-            new_element->value = PyList_GetItem(value, i);
-            Py_INCREF(new_element->value);
             current->next = new_element;
-            current = current->next;
+            current = new_element;
         }
     }
     return head;
-    
 }
 
 static MyList*
@@ -58,6 +75,14 @@ copy_my_list(MyList* src) {
     while (src_current) {
         MyList* new_node = (MyList*)MyListType.tp_alloc(&MyListType, 0);
         if (!new_node) {
+            // Очищаем уже созданные узлы
+            MyList* to_free = head;
+            while (to_free) {
+                MyList* next = to_free->next;
+                Py_XDECREF(to_free->value);
+                Py_TYPE(to_free)->tp_free(to_free);
+                to_free = next;
+            }
             return NULL;
         }
         new_node->value = src_current->value ? Py_NewRef(src_current->value) : NULL;
@@ -69,7 +94,6 @@ copy_my_list(MyList* src) {
     
     return head;
 }
-
 static MyList*
 get_last(MyList* head) {
     if (!head) return NULL;
@@ -363,8 +387,7 @@ insert(PyObject* op, PyObject* args){
                 old_node->value = self->value;
                 old_node->next = self->next;
                 
-                self->value = value;
-                Py_XINCREF(self->value);
+                Py_XSETREF(self->value, Py_NewRef(value));
                 self->next = old_node;
                 
                 Py_RETURN_NONE;
@@ -443,8 +466,7 @@ insert(PyObject* op, PyObject* args){
                 old_node->value = self->value;
                 old_node->next = self->next;
                 
-                self->value = (PyObject*)new_list;
-                Py_INCREF(self->value);
+                Py_XSETREF(self->value, Py_NewRef((PyObject*)new_list));
                 self->next = old_node;
             } else {
                 int i = 0;
@@ -519,8 +541,7 @@ insert(PyObject* op, PyObject* args){
             old_node->value = self->value;
             old_node->next = self->next;
             
-            self->value = value;
-            Py_XINCREF(self->value);
+            Py_XSETREF(self->value, Py_NewRef(value));
             self->next = old_node;
             
             Py_RETURN_NONE;
