@@ -85,7 +85,7 @@ popAt(PyObject* op, PyObject* args){
         return NULL;
     }
 
-    if(self->value == NULL){
+    if(self->value == NULL && self->next == NULL){
         Py_RETURN_NONE;
     }
 
@@ -95,6 +95,12 @@ popAt(PyObject* op, PyObject* args){
 
         value = self->value;
         MyList* new_l = self->next;
+        
+        if (new_l == NULL) {
+            self->value = NULL;
+            return value;
+        }
+        
         self->value = new_l->value;
         self->next = new_l->next;
 
