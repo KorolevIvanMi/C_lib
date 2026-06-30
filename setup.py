@@ -31,7 +31,7 @@ class MakeBuild(build_ext):
             raise RuntimeError("Make failed")
         
         # Проверяем, что .so создался
-        so_file = "build/mylist.so"
+        so_file = "lib/mylist.so"
         if not os.path.exists(so_file):
             raise RuntimeError(f"Не найден {so_file} после сборки")
         
