@@ -17,3 +17,7 @@ dependencies = []
 [project.urls]
 Homepage = "https://github.com/KorolevIvanMi"
 Repository = "https://github.com/KorolevIvanMi/C_lib"
+
+[tool.setuptools]
+# Явно говорим: никаких пакетов не искать
+packages = []
