@@ -341,7 +341,6 @@ prepend(PyObject* op, PyObject* args){
     }
     Py_RETURN_NONE;
 }
-
 PyObject*
 insert(PyObject* op, PyObject* args){
     MyList* self = (MyList*)op;
@@ -384,7 +383,7 @@ insert(PyObject* op, PyObject* args){
         if(unpack == 0){
             if(req_pos == 0){
                 MyList* old_node = (MyList*)MyListType.tp_alloc(&MyListType, 0);
-                old_node->value = self->value;
+                old_node->value = Py_NewRef(self->value);
                 old_node->next = self->next;
                 
                 Py_XSETREF(self->value, Py_NewRef(value));
@@ -409,8 +408,7 @@ insert(PyObject* op, PyObject* args){
             }
             
             MyList* new_node = (MyList*)MyListType.tp_alloc(&MyListType, 0);
-            new_node->value = value;
-            Py_XINCREF(new_node->value);  
+            new_node->value = Py_NewRef(value);
             new_node->next = current->next;
             current->next = new_node;
         }
@@ -463,7 +461,7 @@ insert(PyObject* op, PyObject* args){
             }
             if(req_pos == 0){
                 MyList* old_node = (MyList*)MyListType.tp_alloc(&MyListType, 0);
-                old_node->value = self->value;
+                old_node->value = Py_NewRef(self->value);
                 old_node->next = self->next;
                 
                 Py_XSETREF(self->value, Py_NewRef((PyObject*)new_list));
@@ -485,8 +483,7 @@ insert(PyObject* op, PyObject* args){
                 }
                 
                 MyList* new_node = (MyList*)MyListType.tp_alloc(&MyListType, 0);
-                new_node->value = (PyObject*)new_list;
-                Py_INCREF(new_node->value);
+                new_node->value = Py_NewRef((PyObject*)new_list);
                 new_node->next = current->next;
                 current->next = new_node;
             }
@@ -538,7 +535,7 @@ insert(PyObject* op, PyObject* args){
         // Обычное значение
         if(req_pos == 0){
             MyList* old_node = (MyList*)MyListType.tp_alloc(&MyListType, 0);
-            old_node->value = self->value;
+            old_node->value = Py_NewRef(self->value);
             old_node->next = self->next;
             
             Py_XSETREF(self->value, Py_NewRef(value));
@@ -563,8 +560,7 @@ insert(PyObject* op, PyObject* args){
         }
         
         MyList* new_node = (MyList*)MyListType.tp_alloc(&MyListType, 0);
-        new_node->value = value;
-        Py_XINCREF(new_node->value);
+        new_node->value = Py_NewRef(value);
         new_node->next = current->next;
         current->next = new_node;
     }
