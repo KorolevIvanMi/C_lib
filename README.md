@@ -73,7 +73,7 @@ poetry add git+https://github.com/KorolevIvanMi/C_lib.git
 
 ---
 
-## 🚀 Итог
+##  Итог
 
 **Проект полностью готов!**
 
