@@ -373,13 +373,13 @@ find(PyObject* op, PyObject* args){
     index = 0;
     while(current != NULL){
         if(PyObject_RichCompareBool(current->value, req_value, Py_EQ) == true){
-            PyLong_FromLong(index);
+            return PyLong_FromLong(index);
             break;
         }
         current = current->next;
         index += 1;
     }
-    PyLong_FromLong(-1);
+    return PyLong_FromLong(-1);
 }
 
 PyObject*
