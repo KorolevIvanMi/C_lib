@@ -368,7 +368,7 @@ find(PyObject* op, PyObject* args){
         return NULL;
     }
     if(current->value == NULL && current->next == NULL ){
-        PyLong_FromLong(index);
+        return PyLong_FromLong(index);
     }
     index = 0;
     while(current != NULL){
