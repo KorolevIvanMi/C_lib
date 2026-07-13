@@ -66,7 +66,7 @@ static PyMappingMethods MyList_as_map = {
 // data type descriptions for MyList with the purpose of various functions
 PyTypeObject MyListType = {
     .ob_base = PyVarObject_HEAD_INIT(NULL, 0)
-    .tp_name = "list.List",
+    .tp_name = "mylist.List",
     .tp_doc = PyDoc_STR("My list\n\n"
                     "List() -> new empty list\n"
                     "List(iterable) -> new list initialized from iterable's items\n"
