@@ -4,7 +4,6 @@ PYTHON_INC = $(shell python3-config --includes 2>/dev/null || echo "-I/usr/inclu
 INC = -I./headers
 TARGET = lib/mylist.so
 
-# Перечисляем все .c файлы
 SOURCES = c/list_module.c  c/core_module.c c/read_module.c c/update_module.c c/delete_module.c
 
 all: $(TARGET)
